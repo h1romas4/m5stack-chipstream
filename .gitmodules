@@ -10,3 +10,6 @@
 [submodule "components/m5gfx"]
 	path = components/m5gfx
 	url = https://github.com/m5stack/M5GFX
+[submodule "components/ymfm/ymfm"]
+	path = components/ymfm/ymfm
+	url = https://github.com/aaronsgiles/ymfm
