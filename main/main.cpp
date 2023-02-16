@@ -70,7 +70,14 @@ void setup(void)
     // play (WIP but too slow..)
     if(vgm_result) {
         // loop one in vgm
-        while(vgm_play(CHIPSTREAM_VGM_INDEX_ID) == 0) {
+        uint32_t loop_count = 0;
+        while(loop_count == 0) {
+            // I (11256) main.cpp: render time: 4096 / 969ms
+            // I (2990) main.cpp: render time: 4096 / 752ms
+            uint32_t time = millis();
+            loop_count = vgm_play(CHIPSTREAM_VGM_INDEX_ID);
+            ESP_LOGI(TAG, "render time: %d / %dms", CHIPSTREAM_SAMPLE_CHUNK_SIZE, (uint32_t)(millis() - time));
+
             int16_t* s16le = vgm_get_sampling_s16le_ref(CHIPSTREAM_VGM_INDEX_ID);
             // TODO: output i2s
         }
