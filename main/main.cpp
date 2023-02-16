@@ -67,10 +67,12 @@ void setup(void)
         memory_drop(memory_index_id);
     }
 
-    // play
+    // play (WIP but too slow..)
     if(vgm_result) {
+        // loop one in vgm
         while(vgm_play(CHIPSTREAM_VGM_INDEX_ID) == 0) {
             int16_t* s16le = vgm_get_sampling_s16le_ref(CHIPSTREAM_VGM_INDEX_ID);
+            // TODO: output i2s
         }
     }
 
