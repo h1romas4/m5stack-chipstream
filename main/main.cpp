@@ -20,14 +20,14 @@ extern "C" void vgm_drop(uint32_t vgm_index_id);
 #define CHIPSTREAM_MEMORY_INDEX_ID 0
 #define CHIPSTREAM_VGM_INDEX_ID 0
 #define CHIPSTREAM_SAPMLING_RATE 44100
-#define CHIPSTREAM_SAMPLE_CHUNK_SIZE 2048
+#define CHIPSTREAM_SAMPLE_CHUNK_SIZE 4096
 
 void setup(void)
 {
     M5.begin();
 
     // workaround disable watchdog
-    esp_task_wdt_init(500, false);
+    esp_task_wdt_init(3600, false);
 
     // SD open
     File fp = SD.open("/M5Stack/VGM/05.vgm");
