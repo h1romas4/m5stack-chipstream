@@ -22,14 +22,16 @@ else()
     message(FATAL_ERROR "Unsupported target ${CONFIG_IDF_TARGET}")
 endif()
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CARGO_BUILD_TYPE "debug")
-    set(CARGO_BUILD_ARG "")
-else()
-    set(CARGO_BUILD_TYPE "release")
-    set(CARGO_BUILD_ARG "--release")
-endif()
+# if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+#     set(CARGO_BUILD_TYPE "debug")
+#     set(CARGO_BUILD_ARG "")
+# else()
+#     set(CARGO_BUILD_TYPE "release")
+#     set(CARGO_BUILD_ARG "--release")
+# endif()
 
+set(CARGO_BUILD_TYPE "release")
+set(CARGO_BUILD_ARG "--release")
 
 set(CARGO_BUILD_STD_ARG -Zbuild-std=std,panic_abort -Zbuild-std-features=panic_immediate_abort)
 
