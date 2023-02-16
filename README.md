@@ -1,4 +1,4 @@
-# chipstream-esp32
+#  m5stack-chipstream (WIP)
 
 This is a test to port C++'s ymfm and Rust's vgmplay to ESP32(Xtensa).
 
