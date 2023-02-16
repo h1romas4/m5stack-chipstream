@@ -2,7 +2,7 @@
 name = "chipstream"
 version = "0.1.0"
 authors = ["h1romas4 <h1romas4@gmail.com>"]
-edition = "2018"
+edition = "2021"
 resolver = "2"
 
 [lib]
@@ -17,6 +17,13 @@ opt-level = "z"
 
 [dependencies]
 esp-idf-sys = { version = "0.32.1", features = ["native"] }
+flate2 = "1.0"
+nom = "7"
+serde = "1"
+serde_json = "1"
+serde_derive = "1"
+array-macro = "2"
+approx_eq = "0.1"
 
 [build-dependencies]
 embuild = "0.30.4"

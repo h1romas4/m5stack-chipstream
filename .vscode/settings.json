@@ -7,6 +7,7 @@
         "stdint.h": "c",
         "wasm3.h": "c",
         "m3_env.h": "c",
-        "fib32.wasm.h": "c"
+        "fib32.wasm.h": "c",
+        "functional": "cpp"
     }
 }
