@@ -1,5 +1,9 @@
 # chipstream-esp32
 
+This is a test to port C++'s ymfm and Rust's vgmplay to ESP32(Xtensa).
+
+The repository is a work in progress. We have only tried to build Rust and have not implemented it yet.
+
 ## Build
 
 ### Require
@@ -35,6 +39,36 @@ Thread model: posix
 gcc version 8.4.0 (crosstool-NG esp-2021r2-patch5)
 ```
 
+- Setup Rust(Xtensa)
+
+https://github.com/esp-rs/rust-build
+
+```
+$ ls -laF ~/.rustup/toolchains/esp/
+合計 28
+drwxrwxr-x 7 hiromasa hiromasa 4096  2月 14 20:56 ./
+drwxrwxr-x 9 hiromasa hiromasa 4096  2月 14 20:55 ../
+drwxr-xr-x 2 hiromasa hiromasa 4096  2月 14 20:56 bin/
+drwxr-xr-x 3 hiromasa hiromasa 4096  2月 14 20:56 etc/
+drwxr-xr-x 3 hiromasa hiromasa 4096  2月 14 20:56 lib/
+drwxr-xr-x 2 hiromasa hiromasa 4096  2月 14 20:56 libexec/
+drwxr-xr-x 5 hiromasa hiromasa 4096  2月 14 20:56 share/
+$ ~/.rustup/toolchains/esp/bin/rustc -V
+rustc 1.67.0-nightly (725e31c21 2023-01-25)
+```
+
+```
+$ ls -laF ~/.espressif/tools/xtensa-esp32-elf-clang/
+合計 12
+drwxrwxr-x  3 hiromasa hiromasa 4096  2月 14 20:58 ./
+drwxrwxr-x 13 hiromasa hiromasa 4096  2月 14 20:58 ../
+drwxrwxr-x  3 hiromasa hiromasa 4096  2月 14 20:58 esp-15.0.0-20221201-x86_64-unknown-linux-gnu/
+```
+
+```
+export LIBCLANG_PATH="/home/hiromasa/.espressif/tools/xtensa-esp32-elf-clang/esp-15.0.0-20221201-x86_64-unknown-linux-gnu/esp-clang/lib/"
+```
+
 ### Build and Execute
 
 1. git clone and build
@@ -45,31 +79,10 @@ cd m5stack-chipstream
 idf.py build
 ```
 
-2. Write Partition table
-
-```
-idf.py partition-table-flash
-```
-
-3. Write TypeType font to SPIFFS
-
-```
-parttool.py write_partition --partition-name=font --partition-subtype=spiffs --input resources/spiffs_font.bin
-```
-
-4. Restart M5Stack Core 2
+2. Restart M5Stack Core 2
 
 ```
 idf.py flash monitor
-```
-
-## Note
-
-- Create SPIFFS parteation file
-
-```
-# for TrueType font
-python ${IDF_PATH}/components/spiffs/spiffsgen.py 0x100000 resources/font resources/spiffs_font.bin
 ```
 
 ## Dependencies
@@ -81,10 +94,11 @@ Thanks for all the open source.
 |[esp-idf](https://docs.espressif.com/projects/esp-idf/en/release-v4.4/esp32/get-started/index.html)|`v4.4.3`|BSD License|
 |[arduino-esp32](https://github.com/espressif/arduino-esp32)|`2.0.6`|LGPL-2.1 License|
 |[M5Core2](https://github.com/m5stack/M5Core2)|`0.1.5`|MIT License|
-|[M5EPD](https://github.com/m5stack/M5EPD)|`0.1.4`|FreeType Part(The FreeType License)|
-|[M5GFX](https://github.com/m5stack/M5GFX)|`0.1.4`|FreeType Part(The FreeType License)|
-|[源真ゴシック](http://jikasei.me/font/genshin/)|-|SIL Open Font License 1.1|
+|[M5EPD](https://github.com/m5stack/M5EPD)|`0.1.4`|The FreeType License(FreeType Part)|
+|[M5GFX](https://github.com/m5stack/M5GFX)|`0.1.4`|MIT license|
+|[ymfm](https://github.com/aaronsgiles/ymfm)|`d641a806`|BSD-3-Clause license|
+|[MAME](https://github.com/mamedev/mame)||GPL(The BSD-3 part from MAME is being ported)|
 
 ## License
 
-MIT License
+BSD-3-Clause License

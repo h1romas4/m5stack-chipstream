@@ -14,6 +14,7 @@ set(SRCS
     ymfm/src/ymfm_opz.cpp
     ymfm/src/ymfm_pcm.cpp
     ymfm/src/ymfm_ssg.cpp
+    ffi/ymfmffi.cpp
 )
 
 idf_component_register(
