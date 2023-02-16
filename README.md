@@ -2,7 +2,7 @@
 
 This is a test to port C++'s ymfm and Rust's vgmplay to ESP32(Xtensa).
 
-The repository is a work in progress. We have only tried to build Rust and have not implemented it yet.
+The repository is a work in progress. Still very slow and impractical. It may be a good reference for Rust builds in Xtensa.
 
 ## Build
 
