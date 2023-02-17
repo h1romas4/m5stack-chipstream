@@ -20,7 +20,7 @@ extern "C" void vgm_drop(uint32_t vgm_index_id);
 #define CHIPSTREAM_MEMORY_INDEX_ID 0
 #define CHIPSTREAM_VGM_INDEX_ID 0
 #define CHIPSTREAM_SAPMLING_RATE 44100
-#define CHIPSTREAM_SAMPLE_CHUNK_SIZE 4096
+#define CHIPSTREAM_SAMPLE_CHUNK_SIZE 44100
 
 void setup(void)
 {
@@ -34,7 +34,7 @@ void setup(void)
     size_t vgm_size = fp.size();
     ESP_LOGI(TAG, "vgm file(%d)", vgm_size);
 
-    // alloc vgm data (2Mbyte)
+    // alloc vgm data
     memory_alloc(CHIPSTREAM_MEMORY_INDEX_ID, vgm_size);
     uint8_t *vgm_alloc_address  = memory_get_ref(CHIPSTREAM_MEMORY_INDEX_ID);
     ESP_LOGI(TAG, "memory_get_ref(%p)", vgm_alloc_address);
