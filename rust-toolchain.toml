@@ -1,3 +1,4 @@
-[toolchain]
+# for rust-analyzer
 
+[toolchain]
 channel = "esp"
