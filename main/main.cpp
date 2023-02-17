@@ -1,6 +1,6 @@
 #include <Arduino.h>
-#include <M5Core2.h>
 #include <esp_task_wdt.h>
+#include <SD.h>
 
 static const char *TAG = "main.cpp";
 
@@ -24,7 +24,7 @@ extern "C" void vgm_drop(uint32_t vgm_index_id);
 
 void setup(void)
 {
-    M5.begin();
+    // M5.begin();
 
     // workaround disable watchdog
     esp_task_wdt_init(3600, false);
@@ -97,7 +97,7 @@ void setup(void)
 
 void loop(void)
 {
-    M5.update();
+    // M5.update();
 
     ESP_LOGI(TAG, "Hello, M5Stack Core2 world.");
 
