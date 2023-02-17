@@ -78,8 +78,12 @@ void setup(void)
         // loop one in vgm
         uint32_t loop_count = 0;
         while(loop_count == 0) {
-            // I (2462) main.cpp: render time: 4096 / 168ms
-            // I (2622) main.cpp: render time: 4096 / 157ms
+            // include ymfm
+            //  I (4365) main.cpp: render time: 44100 / 2001ms
+            //  I (6540) main.cpp: render time: 44100 / 2105ms
+            // exclude ymfm
+            //  I (2873) main.cpp: render time: 44100 / 522ms
+            //  I (3443) main.cpp: render time: 44100 / 501ms
             uint32_t time = millis();
             loop_count = vgm_play(CHIPSTREAM_VGM_INDEX_ID);
             ESP_LOGI(TAG, "render time: %d / %dms", CHIPSTREAM_SAMPLE_CHUNK_SIZE, (uint32_t)(millis() - time));
