@@ -78,10 +78,13 @@ void setup(void)
         // loop one in vgm
         uint32_t loop_count = 0;
         while(loop_count == 0) {
-            // include ymfm
+            // ymfm (on Flash) and X68K OKI
             //  I (4365) main.cpp: render time: 44100 / 2001ms
             //  I (6540) main.cpp: render time: 44100 / 2105ms
-            // exclude ymfm
+            // ymfm (on IRAM) and X68K OKI
+            //  I (4356) main.cpp: render time: 44100 / 1988ms
+            //  I (6521) main.cpp: render time: 44100 / 2094ms
+            // only X68K OKI
             //  I (2873) main.cpp: render time: 44100 / 522ms
             //  I (3443) main.cpp: render time: 44100 / 501ms
             uint32_t time = millis();

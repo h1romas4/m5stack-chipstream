@@ -1,0 +1,12 @@
+[mapping:ymfm]
+archive: libymfm.a
+entries:
+    ymfm_adpcm (defalut)
+    ymfm_misc (noflash)
+    ymfm_opl (defalut)
+    ymfm_opm (noflash)
+    ymfm_opq (defalut)
+    ymfm_opz (defalut)
+    ymfm_pcm (defalut)
+    ymfm_ssg (noflash)
+    ymfmffi (noflash)
