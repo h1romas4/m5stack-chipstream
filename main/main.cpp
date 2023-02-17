@@ -32,6 +32,10 @@ SPIClass hspi(FSPI);
 void setup(void)
 {
     // M5.begin();
+    // SPI initialize (CS: SD card)
+    hspi.begin(EXTRA_SPI1_SCLK, EXTRA_SPI1_MISO, EXTRA_SPI1_MOSI, EXTRA_SD_CS);
+    hspi.setFrequency(EXTRA_SPI1_CLOCK_HZ);
+    // SD begin
     SD.begin(EXTRA_SD_CS, hspi, EXTRA_SPI1_CLOCK_HZ, "/sdcard", 1, false);
 
     // workaround disable watchdog
