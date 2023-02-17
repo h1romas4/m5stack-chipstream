@@ -47,6 +47,9 @@ void setup(void)
         ESP_LOGE(TAG, "read vgm error(%d)", read_vgm_size);
     }
 
+    // heap wwatch
+    heap_caps_print_heap_info(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL | MALLOC_CAP_DEFAULT);
+
     // create vgm instance
     bool vgm_result = vgm_create(
         CHIPSTREAM_VGM_INDEX_ID,
@@ -72,8 +75,8 @@ void setup(void)
         // loop one in vgm
         uint32_t loop_count = 0;
         while(loop_count == 0) {
-            // I (11256) main.cpp: render time: 4096 / 969ms
-            // I (2990) main.cpp: render time: 4096 / 752ms
+            // I (2462) main.cpp: render time: 4096 / 168ms
+            // I (2622) main.cpp: render time: 4096 / 157ms
             uint32_t time = millis();
             loop_count = vgm_play(CHIPSTREAM_VGM_INDEX_ID);
             ESP_LOGI(TAG, "render time: %d / %dms", CHIPSTREAM_SAMPLE_CHUNK_SIZE, (uint32_t)(millis() - time));
