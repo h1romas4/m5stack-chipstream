@@ -2,6 +2,8 @@
 #include <esp_task_wdt.h>
 #include <SD.h>
 
+#include "esp32s3_devkitc.h"
+
 static const char *TAG = "main.cpp";
 
 /**
@@ -22,9 +24,15 @@ extern "C" void vgm_drop(uint32_t vgm_index_id);
 #define CHIPSTREAM_SAPMLING_RATE 44100
 #define CHIPSTREAM_SAMPLE_CHUNK_SIZE 44100
 
+/**
+ * SPI member
+ */
+SPIClass hspi(FSPI);
+
 void setup(void)
 {
     // M5.begin();
+    SD.begin(EXTRA_SD_CS, hspi, EXTRA_SPI1_CLOCK_HZ, "/sdcard", 1, false);
 
     // workaround disable watchdog
     esp_task_wdt_init(3600, false);
