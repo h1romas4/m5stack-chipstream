@@ -9,7 +9,7 @@ resolver = "2"
 crate-type = ["staticlib"]
 
 [profile.release]
-opt-level = "s"
+opt-level = 3
 
 [profile.dev]
 debug = true # Symbols are nice and they don't increase the size on Flash
