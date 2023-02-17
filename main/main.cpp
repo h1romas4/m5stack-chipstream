@@ -58,6 +58,9 @@ void setup(void)
         CHIPSTREAM_MEMORY_INDEX_ID);
     ESP_LOGI(TAG, "vgm_create(%d)", vgm_result);
 
+    // drop vgm data (clone by vgm_create)
+    memory_drop(CHIPSTREAM_MEMORY_INDEX_ID);
+
     // get json
     if(vgm_result) {
         uint32_t memory_index_id = vgm_get_gd3_json(CHIPSTREAM_VGM_INDEX_ID);
@@ -90,9 +93,6 @@ void setup(void)
     if(vgm_result) {
         vgm_drop(CHIPSTREAM_VGM_INDEX_ID);
     }
-
-    // drop vgm data
-    memory_drop(CHIPSTREAM_MEMORY_INDEX_ID);
 }
 
 void loop(void)
