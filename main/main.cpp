@@ -45,7 +45,6 @@ typedef enum {
 } vgm_state_t;
 
 vgm_state_t vgm_state;
-uint32_t loop_count;
 uint32_t ring_buffer[RING_BUF_LEN][CHIPSTREAM_SAMPLE_CHUNK_SIZE];
 uint32_t ring_index = 0;
 int32_t ring_play_index = 0;
