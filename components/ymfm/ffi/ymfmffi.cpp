@@ -144,7 +144,7 @@ public:
         }
 
         // generate at the appropriate sample rate
-        // m_chip.generate(&m_output);
+        m_chip.generate(&m_output);
 
         // add the final result to the buffer
         if (m_type == CHIP_YM2203)
