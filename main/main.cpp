@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <M5Core2.h>
 #include <esp_task_wdt.h>
+#include <driver/i2s.h>
 
 static const char *TAG = "main.cpp";
 
@@ -20,11 +21,56 @@ extern "C" void vgm_drop(uint32_t vgm_index_id);
 #define CHIPSTREAM_MEMORY_INDEX_ID 0
 #define CHIPSTREAM_VGM_INDEX_ID 0
 #define CHIPSTREAM_SAPMLING_RATE 44100
-#define CHIPSTREAM_SAMPLE_CHUNK_SIZE 44100
+#define CHIPSTREAM_SAMPLE_CHUNK_SIZE 128
 
+#define STREO 2
+#define SAMPLE_BUF_LEN (CHIPSTREAM_SAMPLE_CHUNK_SIZE * STREO * sizeof(int16_t))
+
+/**
+ * Module RCA I2S initilize
+ */
+void init_module_rca_i2s(void)
+{
+    // i2s_driver_install
+    i2s_config_t i2s_config = {
+        .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX),
+        .sample_rate = CHIPSTREAM_SAPMLING_RATE,
+        .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
+        .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
+        .communication_format = (i2s_comm_format_t)(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),
+        .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
+        .dma_buf_count = 2,
+        .dma_buf_len = SAMPLE_BUF_LEN,
+        .use_apll = false,
+        .tx_desc_auto_clear = true,
+        .fixed_mclk = I2S_PIN_NO_CHANGE
+    };
+    ESP_ERROR_CHECK(i2s_driver_install(I2S_NUM_1, &i2s_config, 0, NULL));
+
+    // i2s_set_pin
+    i2s_pin_config_t i2s_pin_config = {
+        .mck_io_num = GPIO_NUM_0,
+        .bck_io_num = GPIO_NUM_19,
+        .ws_io_num = GPIO_NUM_0,
+        .data_out_num = GPIO_NUM_2,
+        .data_in_num = I2S_PIN_NO_CHANGE
+    };
+    ESP_ERROR_CHECK(i2s_set_pin(I2S_NUM_1, &i2s_pin_config));
+}
+
+/**
+ * Arduino setup
+ */
 void setup(void)
 {
+    // M5Stack Core2 initialize
     M5.begin();
+
+    // uninstall initial I2S module
+    i2s_driver_uninstall(I2S_NUM_0);
+
+    // initialize module RCA I2S
+    init_module_rca_i2s();
 
     // workaround disable watchdog
     esp_task_wdt_init(3600, false);
@@ -88,11 +134,19 @@ void setup(void)
             //  I (2873) main.cpp: render time: 44100 / 522ms
             //  I (3443) main.cpp: render time: 44100 / 501ms
             uint32_t time = millis();
-            loop_count = vgm_play(CHIPSTREAM_VGM_INDEX_ID);
-            ESP_LOGI(TAG, "render time: %d / %dms", CHIPSTREAM_SAMPLE_CHUNK_SIZE, (uint32_t)(millis() - time));
 
-            int16_t* s16le = vgm_get_sampling_s16le_ref(CHIPSTREAM_VGM_INDEX_ID);
-            // TODO: output i2s
+            loop_count = vgm_play(CHIPSTREAM_VGM_INDEX_ID);
+            int16_t *s16le = vgm_get_sampling_s16le_ref(CHIPSTREAM_VGM_INDEX_ID);
+            // output i2s (test)
+            size_t written = 0;
+            ESP_ERROR_CHECK(i2s_write(I2S_NUM_1, s16le, SAMPLE_BUF_LEN, &written, 0));
+
+            // ESP_LOGI(TAG, "written %d / %d (%04x): render time: %d / %dms",
+            //     written,
+            //     SAMPLE_BUF_LEN,
+            //     (uint16_t)s16le[0],
+            //     CHIPSTREAM_SAMPLE_CHUNK_SIZE,
+            //     (uint32_t)(millis() - time));
         }
     }
 
@@ -102,9 +156,12 @@ void setup(void)
     }
 }
 
+/**
+ * Arduino loop
+ */
 void loop(void)
 {
-    M5.update();
+    // M5.update();
 
     ESP_LOGI(TAG, "Hello, M5Stack Core2 world.");
 
