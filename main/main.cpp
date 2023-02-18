@@ -32,6 +32,23 @@ extern "C" void vgm_drop(uint32_t vgm_index_id);
 
 #define STREO 2
 #define SAMPLE_BUF_LEN (CHIPSTREAM_SAMPLE_CHUNK_SIZE * STREO * sizeof(int16_t))
+#define RING_BUF_LEN 5
+
+/**
+ * vgmplay (unsafe)
+ */
+typedef enum {
+  STRAT,
+  PLAYING,
+  END,
+  SLEEP
+} vgm_state_t;
+
+vgm_state_t vgm_state;
+uint32_t loop_count;
+uint32_t ring_buffer[RING_BUF_LEN][CHIPSTREAM_SAMPLE_CHUNK_SIZE];
+uint32_t ring_index = 0;
+int32_t ring_play_index = 0;
 
 /**
  * Module RCA I2S initilize
@@ -121,7 +138,7 @@ esp_err_t init_vgm(const char* filename, uint32_t instance_id, uint32_t mem_id)
     return ESP_OK;
 }
 
-void stream_vgm(uint32_t instance_id) {
+uint32_t stream_vgm(uint32_t instance_id) {
     /**
      * M5Stack Core2 (ESP32) Test Result
      *
@@ -141,22 +158,26 @@ void stream_vgm(uint32_t instance_id) {
 
     uint32_t loop_count = vgm_play(instance_id);
     int16_t *s16le = vgm_get_sampling_s16le_ref(instance_id);
-    // output i2s (test)
-    size_t written = 0;
-    ESP_ERROR_CHECK(i2s_write(I2S_NUM_1, s16le, SAMPLE_BUF_LEN, &written, 0));
 
-    ESP_LOGI(TAG, "written %d / %d (%04x): render time: %d / %dms",
-        written,
+    ESP_LOGI(TAG, "written %d (%04x): render time: %d / %dms",
         SAMPLE_BUF_LEN,
         (uint16_t)s16le[0],
         CHIPSTREAM_SAMPLE_CHUNK_SIZE,
         (uint32_t)(millis() - time));
+
+    return loop_count;
+}
+
+bool buffer_vgm(uint32_t instance_id)
+{
+    if(stream_vgm(instance_id) > 0) return true;
+    return false;
 }
 
 void drop_vgm(uint32_t instance_id)
 {
     // drop vgm instance
-    vgm_drop(CHIPSTREAM_VGM_INDEX_ID);
+    vgm_drop(instance_id);
 }
 
 /**
@@ -170,23 +191,11 @@ void setup(void)
     // uninstall initial I2S module
     i2s_driver_uninstall(I2S_NUM_0);
 
-    // initialize module RCA I2S
+    // initialize Module RCA I2S
     init_module_rca_i2s();
 
-    // workaround disable watchdog
-    esp_task_wdt_init(3600, false);
-
-    // init vgm
-    ESP_ERROR_CHECK(
-        init_vgm("/M5Stack/VGM/05.vgm",
-        CHIPSTREAM_VGM_INDEX_ID,
-        CHIPSTREAM_MEMORY_INDEX_ID));
-
-    // stream (test 1 tick)
-    stream_vgm(CHIPSTREAM_VGM_INDEX_ID);
-
-    // drop
-    drop_vgm(CHIPSTREAM_VGM_INDEX_ID);
+    // set state
+    vgm_state = vgm_state_t::STRAT;
 }
 
 /**
@@ -196,7 +205,34 @@ void loop(void)
 {
     M5.update();
 
-    ESP_LOGI(TAG, "Hello, M5Stack Core2 world.");
-
-    delay(500);
+    switch (vgm_state) {
+        case vgm_state_t::STRAT:
+            // init vgm
+            ESP_ERROR_CHECK(
+                init_vgm("/M5Stack/VGM/05.vgm",
+                CHIPSTREAM_VGM_INDEX_ID,
+                CHIPSTREAM_MEMORY_INDEX_ID));
+            // pre buffer
+            buffer_vgm(CHIPSTREAM_VGM_INDEX_ID);
+            vgm_state = vgm_state_t::PLAYING;
+            break;
+        case vgm_state_t::PLAYING:
+            // buffring
+            if(buffer_vgm(CHIPSTREAM_VGM_INDEX_ID)) {
+                vgm_state = vgm_state_t::END;
+            }
+            break;
+        case vgm_state_t::END:
+            drop_vgm(CHIPSTREAM_VGM_INDEX_ID);
+            vgm_state = vgm_state_t::SLEEP;
+            break;
+        default:
+            ESP_LOGI(TAG, "sleeping..zzz");
+            delay(999);
+            break;
+    }
+    // output i2s (test)
+    // size_t written = 0;
+    // ESP_ERROR_CHECK(i2s_write(I2S_NUM_1, s16le, SAMPLE_BUF_LEN, &written, 0));
+    delay(1);
 }
