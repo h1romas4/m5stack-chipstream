@@ -1,3 +1,8 @@
+/**
+ * ESP32 Xtensa esp-idf first approach Rust and C/C++ project example.
+ *
+ * It makes interface calls from clang to vgmplay and ymfm(C++), which are built in Rust.
+ */
 #include <Arduino.h>
 #include <M5Core2.h>
 #include <esp_task_wdt.h>
@@ -6,7 +11,9 @@
 static const char *TAG = "main.cpp";
 
 /**
- * chipstream interface test
+ * chipstream(vgmplay) interface test
+ *
+ * Originally, bindgen is used to generate them.
  */
 extern "C" void memory_alloc(uint32_t memory_index_id, uint32_t length);
 extern "C" uint8_t* memory_get_ref(uint32_t memory_index_id);
@@ -119,20 +126,26 @@ void setup(void)
         memory_drop(memory_index_id);
     }
 
-    // play (WIP but too slow..)
+    // play
     if(vgm_result) {
         // loop one in vgm
         uint32_t loop_count = 0;
         while(loop_count == 0) {
-            // ymfm (on Flash) and X68K OKI
-            //  I (4365) main.cpp: render time: 44100 / 2001ms
-            //  I (6540) main.cpp: render time: 44100 / 2105ms
-            // ymfm (on IRAM) and X68K OKI
-            //  I (4356) main.cpp: render time: 44100 / 1988ms
-            //  I (6521) main.cpp: render time: 44100 / 2094ms
-            // only X68K OKI
-            //  I (2873) main.cpp: render time: 44100 / 522ms
-            //  I (3443) main.cpp: render time: 44100 / 501ms
+            /**
+             * M5Stack Core2 (ESP32) Test Result
+             *
+             * ymfm YM2151(on Flash) and X68K OKI
+             *  I (4365) main.cpp: render time: 44100 / 2001ms (*Takes x2 as long as real time)
+             *  I (6540) main.cpp: render time: 44100 / 2105ms
+             * ymfm YM2151(on IRAM) and X68K OKI
+             *  I (4356) main.cpp: render time: 44100 / 1988ms (*Takes x2 as long as real time)
+             *  I (6521) main.cpp: render time: 44100 / 2094ms
+             * only X68K OKI
+             *  I (2873) main.cpp: render time: 44100 / 522ms  (*This speed is well in time)
+             *  I (3443) main.cpp: render time: 44100 / 501ms
+             *
+             * The time is about 400ms shorter for the ESP32-S3 with PSRAM set to 80 MHz Octa.
+             */
             uint32_t time = millis();
 
             loop_count = vgm_play(CHIPSTREAM_VGM_INDEX_ID);
@@ -161,7 +174,7 @@ void setup(void)
  */
 void loop(void)
 {
-    // M5.update();
+    M5.update();
 
     ESP_LOGI(TAG, "Hello, M5Stack Core2 world.");
 

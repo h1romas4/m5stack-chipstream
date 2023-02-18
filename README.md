@@ -1,8 +1,11 @@
 #  m5stack-chipstream (WIP)
 
-This is a test to port C++'s ymfm and Rust's vgmplay to ESP32(Xtensa).
+This is a test to port [C++'s ymfm and Rust's vgmplay](https://github.com/h1romas4/libymfm.wasm) to ESP32(Xtensa).
 
 The repository is a work in progress. Still very slow and impractical. It may be a good reference for Rust builds in Xtensa.
+
+- [M5Stack Core2](https://docs.m5stack.com/en/core/core2)
+- [M5Stack RCA Module (I2S)](https://docs.m5stack.com/ja/module/RCA%20Module%2013.2)
 
 ## Build
 
@@ -39,7 +42,7 @@ Thread model: posix
 gcc version 8.4.0 (crosstool-NG esp-2021r2-patch5)
 ```
 
-- Setup Rust(Xtensa)
+- Setup Rust Xtensa toolchaine
 
 https://github.com/esp-rs/rust-build
 
