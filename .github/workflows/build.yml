@@ -19,7 +19,7 @@ jobs:
         path: |
           ~/esp
           ~/.espressif/
-        key: ${{ runner.os }}-espidf-and-compiler-v443-xtensa-rust-u2204
+        key: ${{ runner.os }}-espidf-and-compiler-v443-xtensa-rust
 
     - name: esp-idf Dependencies Setup
       run: |
@@ -34,12 +34,17 @@ jobs:
         cd ~/esp/esp-idf
         ./install.sh esp32
 
-    - name: Xtensa Rust Toolchaine Setup
+    - name: Rust Toolchaine Setup
       if: steps.cache-toolchaine.outputs.cache-hit != 'true'
       run: |
         sudo apt-get install -y git python3 python3-pip gcc build-essential curl pkg-config libudev-dev
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+    - name: Xtensa Rust Toolchaine Setup
+      if: steps.cache-toolchaine.outputs.cache-hit != 'true'
+      run: |
         cargo install espup
+        espup install
 
     - name: Build
       run: |
