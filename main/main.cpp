@@ -97,7 +97,7 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
     int16_t *s16le = cs_stream_vgm(vgm_instance_id, &loop_count);
 
     // for test
-    // write_module_rca_i2s(s16le, SAMPLE_CHUNK_SIZE);
+    write_module_rca_i2s(s16le, SAMPLE_BUF_LEN);
 
     ESP_LOGI(TAG, "written %d (%04x): render time: %d / %dms",
         SAMPLE_BUF_LEN,
@@ -160,5 +160,5 @@ void loop(void)
             delay(999);
             break;
     }
-    delay(1);
+    vTaskDelay(1);
 }
