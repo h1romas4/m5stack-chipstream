@@ -1,5 +1,7 @@
 #  m5stack-chipstream (WIP)
 
+![](https://github.com/h1romas4/m5stack-chipstream/workflows/Build/badge.svg)
+
 This is a test to port [C++'s ymfm and Rust's vgmplay](https://github.com/h1romas4/libymfm.wasm) to ESP32(Xtensa).
 
 The repository is a work in progress. Still very slow and impractical. It may be a good reference for Rust builds in Xtensa.
