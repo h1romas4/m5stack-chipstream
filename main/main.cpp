@@ -106,9 +106,6 @@ void setup(void)
     // initialize Module RCA I2S
     init_module_rca_i2s(SAPMLING_RATE, SAMPLE_CHUNK_SIZE, 2);
 
-    // load_sd_vgm_file
-    load_sd_vgm_file("/M5STACK/VGM/05.vgm", CS_VGM_INSTANCE_ID, CS_MEM_INDEX_ID);
-
     // heap wwatch
     heap_caps_print_heap_info(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL | MALLOC_CAP_DEFAULT);
 
