@@ -17,9 +17,10 @@ jobs:
       id: cache-toolchaine
       with:
         path: |
+          ~/espup
           ~/esp
           ~/.espressif/
-        key: ${{ runner.os }}-espidf-and-compiler-v443-xtensa-rust
+        key: ${{ runner.os }}-espidf-and-compiler-v443-espup-xtensa-rust
 
     - name: Dependencies Setup
       if: steps.cache-toolchaine.outputs.cache-hit != 'true'
@@ -35,9 +36,11 @@ jobs:
     - name: Xtensa Rust Toolchaine Setup
       if: steps.cache-toolchaine.outputs.cache-hit != 'true'
       run: |
+        mkdir ~/espup
+        cd ~/espup
         curl -L https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-unknown-linux-gnu -o espup
         chmod a+x espup
-        ./espup install
+        ./espup install --export-file ~/espup/export-esp.sh
 
     - name: esp-idf Toolchain Setup
       if: steps.cache-toolchaine.outputs.cache-hit != 'true'
@@ -50,7 +53,7 @@ jobs:
 
     - name: Build
       run: |
-        . ~/export-esp.sh
+        . ~/espup/export-esp.sh
         . ~/esp/esp-idf/export.sh
         pip3 install -r $IDF_PATH/requirements.txt
         idf.py build
