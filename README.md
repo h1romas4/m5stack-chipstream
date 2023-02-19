@@ -11,7 +11,9 @@ The repository is a work in progress. Still very slow and impractical. It may be
 
 ## Build
 
-### Require
+@see [.github/workflows/build.yml](https://github.com/h1romas4/m5stack-chipstream/blob/main/.github/workflows/build.yml)
+
+### Setup
 
 - [Setup ESF-IDF v4.4.3](https://docs.espressif.com/projects/esp-idf/en/v4.4.3/esp32/get-started/index.html#installation-step-by-step)
 
@@ -74,7 +76,7 @@ drwxrwxr-x  3 hiromasa hiromasa 4096  2月 14 20:58 esp-15.0.0-20221201-x86_64-u
 export LIBCLANG_PATH="/home/hiromasa/.espressif/tools/xtensa-esp32-elf-clang/esp-15.0.0-20221201-x86_64-unknown-linux-gnu/esp-clang/lib/"
 ```
 
-### Build and Execute
+### Compile and Flash
 
 1. git clone and build
 
@@ -103,6 +105,7 @@ Thanks for all the open source.
 |[M5GFX](https://github.com/m5stack/M5GFX)|`0.1.4`|MIT license|
 |[ymfm](https://github.com/aaronsgiles/ymfm)|`d641a806`|BSD-3-Clause license|
 |[MAME](https://github.com/mamedev/mame)||GPL(The BSD-3 part from MAME is being ported)|
+|[libymfm.wasm](https://github.com/h1romas4/libymfm.wasm)|`v0.16.0`|BSD-3-Clause license|
 
 ## License
 
