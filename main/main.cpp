@@ -112,9 +112,6 @@ void setup(void)
     // heap wwatch
     heap_caps_print_heap_info(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL | MALLOC_CAP_DEFAULT);
 
-    // test
-    stream_vgm(CS_VGM_INSTANCE_ID);
-
     // set state
     vgm_state = vgm_state_t::STRAT;
 }
