@@ -58,7 +58,8 @@ void load_sd_vgm_file(const char *filename, uint32_t vgm_instance_id, uint32_t v
         SAPMLING_RATE,
         SAMPLE_CHUNK_SIZE);
 
-    // vgm data is cloned and decoded by vgm instance
+    // drop vgmfile mem
+    //  vgm data is cloned and decoded by vgm instance from vgmfile
     cs_drop_mem(CS_MEM_INDEX_ID);
 }
 
@@ -82,6 +83,9 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
 
     uint32_t loop_count;
     int16_t *s16le = cs_stream_vgm(vgm_instance_id, &loop_count);
+
+    // for test
+    // write_module_rca_i2s(s16le, SAMPLE_CHUNK_SIZE);
 
     ESP_LOGI(TAG, "written %d (%04x): render time: %d / %dms",
         SAMPLE_BUF_LEN,
