@@ -96,7 +96,7 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
     uint32_t loop_count;
     int16_t *s16le = cs_stream_vgm(vgm_instance_id, &loop_count);
 
-    // for test
+    // TODO: for test (Waveform generation and I2S playback should be separated)
     write_module_rca_i2s(s16le, SAMPLE_BUF_LEN);
 
     ESP_LOGI(TAG, "written %d (%04x): render time: %d / %dms",
