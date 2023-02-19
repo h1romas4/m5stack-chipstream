@@ -77,13 +77,13 @@ void load_sd_vgm_file(const char *filename, uint32_t vgm_instance_id, uint32_t v
  */
 uint32_t stream_vgm(uint32_t vgm_instance_id) {
     /**
-     * M5Stack Core2 (ESP32) Test Result
+     * M5Stack Core2 (ESP32 with 40MHz PSRAM) Test Result
      *
      * ymfm YM2151(on Flash) and X68K OKI
-     *  I (4365) main.cpp: render time: 44100 / 2001ms (*Takes x2 as long as real time)
+     *  I (4365) main.cpp: render time: 44100 / 2001ms (*Takes x2 as long as realtime)
      *  I (6540) main.cpp: render time: 44100 / 2105ms
      * ymfm YM2151(on IRAM) and X68K OKI
-     *  I (4356) main.cpp: render time: 44100 / 1988ms (*Takes x2 as long as real time)
+     *  I (4356) main.cpp: render time: 44100 / 1988ms (*Takes x2 as long as realtime)
      *  I (6521) main.cpp: render time: 44100 / 2094ms
      * only X68K OKI
      *  I (2873) main.cpp: render time: 44100 / 522ms  (*This speed is well in time)
