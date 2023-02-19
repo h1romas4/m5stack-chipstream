@@ -39,6 +39,9 @@ typedef enum {
 
 vgm_state_t vgm_state;
 
+/**
+ * load_sd_vgm_file
+ */
 void load_sd_vgm_file(const char *filename, uint32_t vgm_instance_id, uint32_t vgm_mem_id)
 {
     // SD open
@@ -69,6 +72,9 @@ void load_sd_vgm_file(const char *filename, uint32_t vgm_instance_id, uint32_t v
     cs_drop_mem(CS_MEM_INDEX_ID);
 }
 
+/**
+ * stream_vgm
+ */
 uint32_t stream_vgm(uint32_t vgm_instance_id) {
     /**
      * M5Stack Core2 (ESP32) Test Result
