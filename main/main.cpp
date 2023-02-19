@@ -12,14 +12,20 @@
 
 static const char *TAG = "main.cpp";
 
+/**
+ * for testing
+ */
+#define VGM_FILE_NAME "/M5Stack/VGM/05.vgm"
+#define CS_MEM_INDEX_ID 0
+#define CS_VGM_INSTANCE_ID 0
+
+/**
+ * Audio settings
+ */
 #define STREO 2
 #define SAPMLING_RATE 44100
 #define SAMPLE_CHUNK_SIZE 128
 #define SAMPLE_BUF_LEN (SAMPLE_CHUNK_SIZE * STREO * sizeof(int16_t))
-
-// for test
-#define CS_MEM_INDEX_ID 0
-#define CS_VGM_INSTANCE_ID 0
 
 /**
  * Play state
@@ -128,7 +134,7 @@ void loop(void)
         case vgm_state_t::STRAT:
             // load and init vgm instance
             load_sd_vgm_file(
-                "/M5Stack/VGM/05.vgm",
+                VGM_FILE_NAME,
                 CS_VGM_INSTANCE_ID,
                 CS_MEM_INDEX_ID);
             vgm_state = vgm_state_t::PLAYING;
