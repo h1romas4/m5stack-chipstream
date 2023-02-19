@@ -53,10 +53,11 @@ https://github.com/esp-rs/espup
 ```
 curl -L https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-unknown-linux-gnu -o espup
 chmod a+x espup
-espup install
+./espup install
 ```
 
 ```
+cat ~/export-esp.sh
 export LIBCLANG_PATH="/home/hiromasa/.espressif/tools/xtensa-esp32-elf-clang/esp-15.0.0-20221201-x86_64-unknown-linux-gnu/esp-clang/lib"
 export CLANG_PATH="/home/hiromasa/.espressif/tools/xtensa-esp32-elf-clang/esp-15.0.0-20221201-x86_64-unknown-linux-gnu/esp-clang/bin/clang"
 ```
