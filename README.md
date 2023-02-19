@@ -48,7 +48,18 @@ gcc version 8.4.0 (crosstool-NG esp-2021r2-patch5)
 
 - Setup Rust Xtensa toolchaine
 
-https://github.com/esp-rs/rust-build
+https://github.com/esp-rs/espup
+
+```
+curl -L https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-unknown-linux-gnu -o espup
+chmod a+x espup
+espup install
+```
+
+```
+export LIBCLANG_PATH="/home/hiromasa/.espressif/tools/xtensa-esp32-elf-clang/esp-15.0.0-20221201-x86_64-unknown-linux-gnu/esp-clang/lib"
+export CLANG_PATH="/home/hiromasa/.espressif/tools/xtensa-esp32-elf-clang/esp-15.0.0-20221201-x86_64-unknown-linux-gnu/esp-clang/bin/clang"
+```
 
 ```
 $ ls -laF ~/.rustup/toolchains/esp/
@@ -70,10 +81,6 @@ $ ls -laF ~/.espressif/tools/xtensa-esp32-elf-clang/
 drwxrwxr-x  3 hiromasa hiromasa 4096  2月 14 20:58 ./
 drwxrwxr-x 13 hiromasa hiromasa 4096  2月 14 20:58 ../
 drwxrwxr-x  3 hiromasa hiromasa 4096  2月 14 20:58 esp-15.0.0-20221201-x86_64-unknown-linux-gnu/
-```
-
-```
-export LIBCLANG_PATH="/home/hiromasa/.espressif/tools/xtensa-esp32-elf-clang/esp-15.0.0-20221201-x86_64-unknown-linux-gnu/esp-clang/lib/"
 ```
 
 ### Compile and Flash
