@@ -58,7 +58,8 @@ void load_sd_vgm_file(const char *filename, uint32_t vgm_instance_id, uint32_t v
         SAPMLING_RATE,
         SAMPLE_CHUNK_SIZE);
 
-    // vgm data is cloned and decoded by vgm instance
+    // drop vgmfile mem
+    //  vgm data is cloned and decoded by vgm instance from vgmfile
     cs_drop_mem(CS_MEM_INDEX_ID);
 }
 
