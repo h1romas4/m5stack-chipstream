@@ -19,18 +19,18 @@ jobs:
         path: |
           ~/espup
           ~/esp
-          ~/.espressif/
-        key: ${{ runner.os }}-espidf-and-compiler-v443-espup-xtensa-rust
+          ~/.espressif
+          ~/.rustup
+        key: ${{ runner.os }}-espidf-and-compiler-v443-espup-rust
 
     - name: Dependencies Setup
-      if: steps.cache-toolchaine.outputs.cache-hit != 'true'
       run: |
         sudo apt-get install -y git wget flex bison gperf python3 python3-pip python3-setuptools cmake ninja-build ccache libffi-dev libssl-dev dfu-util libusb-1.0-0
+        sudo apt-get install -y git python3 python3-pip gcc build-essential curl pkg-config libudev-dev
 
     - name: Rust Toolchaine Setup
       if: steps.cache-toolchaine.outputs.cache-hit != 'true'
       run: |
-        sudo apt-get install -y git python3 python3-pip gcc build-essential curl pkg-config libudev-dev
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
     - name: Xtensa Rust Toolchaine Setup
