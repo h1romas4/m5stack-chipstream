@@ -4,6 +4,8 @@ set(INCLUDEDIRS
 
 set(SRCS
     main.cpp
+    module_rca_i2s.c
+    chipstream.c
 )
 
 idf_component_register(
