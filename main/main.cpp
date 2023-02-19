@@ -120,7 +120,7 @@ void setup(void)
     i2s_driver_uninstall(I2S_NUM_0);
 
     // initialize Module RCA I2S
-    init_module_rca_i2s(SAPMLING_RATE, SAMPLE_CHUNK_SIZE, 2);
+    init_module_rca_i2s(SAPMLING_RATE, SAMPLE_BUF_LEN, 2);
 
     // heap wwatch
     heap_caps_print_heap_info(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL | MALLOC_CAP_DEFAULT);
