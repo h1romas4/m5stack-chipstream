@@ -161,5 +161,5 @@ void loop(void)
             delay(999);
             break;
     }
-    vTaskDelay(1);
+    delay(1);
 }
