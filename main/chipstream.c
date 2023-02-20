@@ -70,18 +70,18 @@ void cs_drop_vgm(uint32_t vgm_instance_id)
 /**
  * Alloc memory on chipstream
  */
-uint8_t* cs_alloc_mem(uint32_t vgm_mem_id, uint32_t vgm_size)
+uint8_t* cs_alloc_mem(uint32_t cs_mem_id, uint32_t vgm_size)
 {
     // alloc chipstream memory
-    memory_alloc(vgm_mem_id, vgm_size);
+    memory_alloc(cs_mem_id, vgm_size);
 
-    return (uint8_t *)memory_get_ref(vgm_mem_id);
+    return (uint8_t *)memory_get_ref(cs_mem_id);
 }
 
 /**
  * Drop memory on chipstream
  */
-void cs_drop_mem(uint32_t vgm_mem_id)
+void cs_drop_mem(uint32_t cs_mem_id)
 {
-    memory_drop(vgm_mem_id);
+    memory_drop(cs_mem_id);
 }
