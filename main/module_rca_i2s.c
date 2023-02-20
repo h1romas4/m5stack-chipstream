@@ -1,4 +1,5 @@
 #include <esp_err.h>
+#include <esp_log.h>
 #include <driver/i2s.h>
 
 static const char *TAG = "module_rca_i2s.c";
@@ -45,4 +46,7 @@ void write_module_rca_i2s(int16_t *s16le, uint32_t bytes)
 {
     size_t written = 0;
     ESP_ERROR_CHECK(i2s_write(I2S_NUM_1, s16le, bytes, &written, portMAX_DELAY));
+    if(bytes != written) {
+        ESP_LOGE(TAG, "i2s_write error: %d / %d", written, bytes);
+    }
 }
