@@ -26,6 +26,7 @@ static const char *TAG = "main.cpp";
 #define SAPMLING_RATE 44100
 #define SAMPLE_CHUNK_SIZE 128
 #define SAMPLE_BUF_LEN (SAMPLE_CHUNK_SIZE * STREO * sizeof(int16_t))
+#define I2S_BUF_LEN 16
 
 /**
  * Play state
@@ -120,7 +121,7 @@ void setup(void)
     i2s_driver_uninstall(I2S_NUM_0);
 
     // initialize Module RCA I2S
-    init_module_rca_i2s(SAPMLING_RATE, SAMPLE_BUF_LEN, 2);
+    init_module_rca_i2s(SAPMLING_RATE, SAMPLE_BUF_LEN, I2S_BUF_LEN);
 
     // heap wwatch
     heap_caps_print_heap_info(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL | MALLOC_CAP_DEFAULT);
