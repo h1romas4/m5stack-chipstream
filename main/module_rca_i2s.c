@@ -38,8 +38,8 @@ void init_module_rca_i2s(uint32_t sample_rate, uint32_t dma_buf_len, uint32_t dm
 /**
  * Module RCA I2S write
  */
-void write_module_rca_i2s(int16_t *s16le, uint32_t len)
+void write_module_rca_i2s(int16_t *s16le, uint32_t bytes)
 {
     size_t written = 0;
-    ESP_ERROR_CHECK(i2s_write(I2S_NUM_1, s16le, len, &written, portMAX_DELAY));
+    ESP_ERROR_CHECK(i2s_write(I2S_NUM_1, s16le, bytes, &written, portMAX_DELAY));
 }
