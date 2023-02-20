@@ -4,7 +4,7 @@
 static const char *TAG = "module_rca_i2s.c";
 
 /**
- * Module RCA I2S initilize
+ * Module RCA I2S(PCM5102APWR) initilize
  */
 void init_module_rca_i2s(uint32_t sample_rate, uint32_t dma_buf_len, uint32_t dma_buf_count)
 {
