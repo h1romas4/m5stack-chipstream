@@ -158,13 +158,13 @@ void setup(void)
     // M5Stack Core2 initialize
     M5.begin();
 
-    // uninstall initial I2S module
+    // uninstall M5Stack Core2 initial I2S module
     i2s_driver_uninstall(I2S_NUM_0);
 
     // initialize Module RCA I2S
     init_module_rca_i2s(SAPMLING_RATE, SAMPLE_BUF_LEN, SAMPLE_BUF_COUNT);
 
-    // heap wwatch
+    // heap watch
     heap_caps_print_heap_info(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL | MALLOC_CAP_DEFAULT);
 
     // create ring buffer
