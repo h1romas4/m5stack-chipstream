@@ -112,8 +112,7 @@ Thanks for all the open source.
 |[M5EPD](https://github.com/m5stack/M5EPD)|`0.1.4`|The FreeType License(FreeType Part)|
 |[M5GFX](https://github.com/m5stack/M5GFX)|`0.1.4`|MIT license|
 |[ymfm](https://github.com/aaronsgiles/ymfm)|`d641a806`|BSD-3-Clause license|
-|[MAME](https://github.com/mamedev/mame)||GPL(The BSD-3 part from MAME is being ported)|
-|[libymfm.wasm](https://github.com/h1romas4/libymfm.wasm)|`v0.16.0`|BSD-3-Clause license|
+|[libymfm.wasm](https://github.com/h1romas4/libymfm.wasm)|`v0.16.0`|BSD-3-Clause license (include MAME's soundchip ports)|
 
 ## License
 
