@@ -30,6 +30,7 @@ static const char *TAG = "main.cpp";
 #define SAMPLE_CHUNK_SIZE 256
 #define SAMPLE_BUF_BYTES (SAMPLE_CHUNK_SIZE * STREO * sizeof(int16_t))
 #define SAMPLE_BUF_COUNT 32
+#define RING_BUF_BYTES (SAMPLE_BUF_BYTES * SAMPLE_BUF_COUNT)
 
 /**
  * Handler
@@ -43,6 +44,7 @@ RingbufHandle_t ring_buf_handle;
 typedef enum {
   STRAT,
   PLAYING,
+  BUFFERD,
   END,
   SLEEP
 } vgm_state_t;
@@ -136,7 +138,8 @@ void task_i2s_write(void *pvParameters)
 {
     while(1) {
         size_t item_size;
-        if(vgm_state == vgm_state_t::PLAYING) {
+        if(vgm_state == vgm_state_t::PLAYING
+            || vgm_state == vgm_state_t::BUFFERD) {
             // wait sample (SAMPLE_BUF_BYTES)
             int16_t *s16le = (int16_t *)xRingbufferReceiveUpTo(
                 ring_buf_handle,
@@ -174,7 +177,7 @@ void setup(void)
 
     // create ring buffer
     ring_buf_handle = xRingbufferCreate(
-        SAMPLE_BUF_BYTES * SAMPLE_BUF_COUNT,
+        RING_BUF_BYTES,
         RINGBUF_TYPE_BYTEBUF);
     if(ring_buf_handle == nullptr) {
         ESP_LOGE(TAG, "Falied to create ring_buf_handle");
@@ -217,8 +220,12 @@ void loop(void)
         case vgm_state_t::PLAYING:
             // stream
             if(stream_vgm(CS_VGM_INSTANCE_ID) > 0) {
-                vgm_state = vgm_state_t::END;
+                vgm_state = vgm_state_t::BUFFERD;
             }
+            break;
+        case vgm_state_t::BUFFERD:
+            // TODO: flash ring buffer
+            vgm_state = vgm_state_t::END;
             break;
         case vgm_state_t::END:
             // TODO: wait flash ring buffer
@@ -230,5 +237,5 @@ void loop(void)
             delay(999);
             break;
     }
-    delay(1);
+    // delay(1);
 }
