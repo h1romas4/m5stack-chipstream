@@ -137,9 +137,9 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
 void task_i2s_write(void *pvParameters)
 {
     while(1) {
-        size_t item_size;
         if(vgm_state == vgm_state_t::PLAYING
             || vgm_state == vgm_state_t::BUFFERD) {
+            size_t item_size;
             // wait sample (SAMPLE_BUF_BYTES)
             int16_t *s16le = (int16_t *)xRingbufferReceiveUpTo(
                 ring_buf_handle,
