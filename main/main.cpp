@@ -105,11 +105,18 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
     uint32_t loop_count;
     int16_t *s16le = cs_stream_vgm(vgm_instance_id, &loop_count);
 
-    // ESP_LOGI(TAG, "written %d (%04x): render time: %d / %dms",
-    //     SAMPLE_BUF_LEN,
-    //     (uint16_t)s16le[0],
-    //     SAMPLE_CHUNK_SIZE,
-    //     (uint32_t)(millis() - time));
+    // The reference is displaced by the placement of the program ??
+    // Pattern 1 (normal)
+    // I (2313) main.cpp: written 512 (8000:8000:8000): render time: 128 / 5ms
+    // Pattern 2 (out of alignment)
+    // I (2313) main.cpp: written 512 (7fff:8000:8000): render time: 128 / 5ms
+    ESP_LOGI(TAG, "written %d (%04x:%04x:%04x): render time: %d / %dms",
+        SAMPLE_BUF_LEN,
+        (uint16_t)s16le[0],
+        (uint16_t)s16le[1],
+        (uint16_t)s16le[SAMPLE_CHUNK_SIZE - 1],
+        SAMPLE_CHUNK_SIZE,
+        (uint32_t)(millis() - time));
 
     // stream to ring buffer
     UBaseType_t res = xRingbufferSend(
