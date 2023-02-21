@@ -266,20 +266,6 @@ impl SoundSlot {
     }
 
     ///
-    /// Convert and return s16le sampling buffer (for FFI)
-    ///
-    pub fn get_output_sampling_s16le(&mut self, s16le: *mut i16) {
-        for i in 0..self.output_sample_chunk_size {
-            unsafe {
-                let left = s16le.offset(i as isize * 2);
-                let right = s16le.offset(i as isize * 2 + 1);
-                *left = convert_sample_f2i(self.output_sampling_l[i]);
-                *right= convert_sample_f2i(self.output_sampling_r[i]);
-            }
-        }
-    }
-
-    ///
     /// Set output level rate
     ///
     pub fn set_output_level_rate(&mut self,

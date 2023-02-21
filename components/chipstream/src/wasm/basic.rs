@@ -523,15 +523,6 @@ pub extern "C" fn vgm_get_sampling_s16le_ref(vgm_index_id: u32) -> *const i16 {
 }
 
 #[no_mangle]
-pub extern "C" fn vgm_get_sampling_s16le(vgm_index_id: u32, s16le: *mut i16) {
-    get_vgm_bank()
-        .borrow_mut()
-        .get_mut(vgm_index_id as usize)
-        .unwrap()
-        .get_output_sampling_s16le(s16le);
-}
-
-#[no_mangle]
 pub extern "C" fn vgm_get_header_json(vgm_index_id: u32) -> u32 {
     let json = get_vgm_bank()
         .borrow_mut()
