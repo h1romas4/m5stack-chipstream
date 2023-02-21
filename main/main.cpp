@@ -27,7 +27,7 @@ static const char *TAG = "main.cpp";
 #define STREO 2
 #define SAPMLING_RATE 44100
 #define SAMPLE_CHUNK_SIZE 128
-#define SAMPLE_BUF_LEN (SAMPLE_CHUNK_SIZE * STREO * sizeof(int16_t))
+#define SAMPLE_BUF_BYTES (SAMPLE_CHUNK_SIZE * STREO * sizeof(int16_t))
 #define SAMPLE_BUF_COUNT 16
 
 /**
@@ -105,24 +105,19 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
     uint32_t loop_count;
     int16_t *s16le = cs_stream_vgm(vgm_instance_id, &loop_count);
 
-    // TODO: There is a memory layout discrepancy between Rust and C.
-    // Pattern 1 (normal)
-    // I (2313) main.cpp: written 512 (8000:8000:8000): render time: 128 / 5ms
-    // Pattern 2 (out of alignment)
-    // I (2313) main.cpp: written 512 (7fff:8000:8000): render time: 128 / 5ms
     ESP_LOGI(TAG, "written %d (%04x:%04x:%04x): render time: %d / %dms",
-        SAMPLE_BUF_LEN,
+        SAMPLE_BUF_BYTES,
         (uint16_t)s16le[0],
         (uint16_t)s16le[1],
         (uint16_t)s16le[SAMPLE_CHUNK_SIZE - 1],
         SAMPLE_CHUNK_SIZE,
         (uint32_t)(millis() - time));
 
-    // stream to ring buffer
+    // stream to ring buffer (copy)
     UBaseType_t res = xRingbufferSend(
         ring_buf_handle,
         s16le,
-        SAMPLE_BUF_LEN,
+        SAMPLE_BUF_BYTES,
         pdMS_TO_TICKS(1000));
     if(res != pdTRUE) {
         ESP_LOGE(TAG, "stream_vgm: failed to xRingbufferSend");
@@ -139,15 +134,15 @@ void task_i2s_write(void *pvParameters)
     while(1) {
         size_t item_size;
         if(vgm_state == vgm_state_t::PLAYING) {
-            // wait sample (SAMPLE_BUF_LEN)
+            // wait sample (SAMPLE_BUF_BYTES)
             int16_t *s16le = (int16_t *)xRingbufferReceiveUpTo(
                 ring_buf_handle,
                 &item_size,
                 pdMS_TO_TICKS(999),
-                SAMPLE_BUF_LEN);
-            if(item_size == SAMPLE_BUF_LEN) {
+                SAMPLE_BUF_BYTES);
+            if(item_size == SAMPLE_BUF_BYTES) {
                 // write i2s
-                write_module_rca_i2s(s16le, SAMPLE_BUF_LEN);
+                write_module_rca_i2s(s16le, SAMPLE_BUF_BYTES);
                 // return item to ring buffer
                 vRingbufferReturnItem(ring_buf_handle, (void *)s16le);
                 continue;
@@ -169,14 +164,14 @@ void setup(void)
     i2s_driver_uninstall(I2S_NUM_0);
 
     // initialize Module RCA I2S
-    init_module_rca_i2s(SAPMLING_RATE, SAMPLE_BUF_LEN, SAMPLE_BUF_COUNT);
+    init_module_rca_i2s(SAPMLING_RATE, SAMPLE_BUF_BYTES, SAMPLE_BUF_COUNT);
 
     // heap watch
     heap_caps_print_heap_info(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL | MALLOC_CAP_DEFAULT);
 
     // create ring buffer
     ring_buf_handle = xRingbufferCreate(
-        SAMPLE_BUF_LEN * SAMPLE_BUF_COUNT,
+        SAMPLE_BUF_BYTES * SAMPLE_BUF_COUNT,
         RINGBUF_TYPE_BYTEBUF);
     if(ring_buf_handle == nullptr) {
         ESP_LOGE(TAG, "Falied to create ring_buf_handle");
