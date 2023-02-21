@@ -105,7 +105,7 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
     uint32_t loop_count;
     int16_t *s16le = cs_stream_vgm(vgm_instance_id, &loop_count);
 
-    // The reference is displaced by the placement of the program ??
+    // The reference is displaced by the placement of the program or memory ??
     // Pattern 1 (normal)
     // I (2313) main.cpp: written 512 (8000:8000:8000): render time: 128 / 5ms
     // Pattern 2 (out of alignment)
