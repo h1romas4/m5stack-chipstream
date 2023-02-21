@@ -20,15 +20,16 @@ static const char *TAG = "main.cpp";
 #define VGM_FILE_NAME "/M5Stack/VGM/01.vgm"
 #define CS_MEM_INDEX_ID 0
 #define CS_VGM_INSTANCE_ID 0
+#define DEBUG 0
 
 /**
  * Audio settings
  */
 #define STREO 2
 #define SAPMLING_RATE 44100
-#define SAMPLE_CHUNK_SIZE 128
+#define SAMPLE_CHUNK_SIZE 256
 #define SAMPLE_BUF_BYTES (SAMPLE_CHUNK_SIZE * STREO * sizeof(int16_t))
-#define SAMPLE_BUF_COUNT 16
+#define SAMPLE_BUF_COUNT 32
 
 /**
  * Handler
@@ -105,6 +106,7 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
     uint32_t loop_count;
     int16_t *s16le = cs_stream_vgm(vgm_instance_id, &loop_count);
 
+    #if DEBUG
     ESP_LOGI(TAG, "written %d (%04x:%04x:%04x): render time: %d / %dms",
         SAMPLE_BUF_BYTES,
         (uint16_t)s16le[0],
@@ -112,6 +114,7 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
         (uint16_t)s16le[SAMPLE_CHUNK_SIZE - 1],
         SAMPLE_CHUNK_SIZE,
         (uint32_t)(millis() - time));
+    #endif
 
     // stream to ring buffer (copy)
     UBaseType_t res = xRingbufferSend(
