@@ -103,13 +103,12 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
     uint32_t time = millis();
 
     uint32_t loop_count;
-    int16_t *s16le = cs_stream_vgm(vgm_instance_id, &loop_count);
 
-    // TODO: There is a memory layout discrepancy between Rust and C.
-    // Pattern 1 (normal)
-    // I (2313) main.cpp: written 512 (8000:8000:8000): render time: 128 / 5ms
-    // Pattern 2 (out of alignment)
-    // I (2313) main.cpp: written 512 (7fff:8000:8000): render time: 128 / 5ms
+    int16_t s16le[SAMPLE_BUF_LEN / 2];
+    cs_stream_vgm(vgm_instance_id, s16le, &loop_count);
+
+    // int16_t *s16le = cs_stream_vgm_ref(vgm_instance_id, &loop_count);
+
     ESP_LOGI(TAG, "written %d (%04x:%04x:%04x): render time: %d / %dms",
         SAMPLE_BUF_LEN,
         (uint16_t)s16le[0],
@@ -118,7 +117,7 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
         SAMPLE_CHUNK_SIZE,
         (uint32_t)(millis() - time));
 
-    // stream to ring buffer
+    // stream to ring buffer (copy)
     UBaseType_t res = xRingbufferSend(
         ring_buf_handle,
         s16le,
