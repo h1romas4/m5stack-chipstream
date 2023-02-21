@@ -9,7 +9,11 @@
  *
  * Originally, bindgen is used to generate them.
  */
-extern uint32_t vgm_create(uint32_t vgm_index_id, uint32_t output_sampling_rate, uint32_t output_sample_chunk_size, uint32_t memory_index_id);
+extern uint32_t vgm_create(
+    uint32_t vgm_index_id,
+    uint32_t output_sampling_rate,
+    uint32_t output_sample_chunk_size,
+    uint32_t memory_index_id);
 extern uint32_t vgm_get_gd3_json(uint32_t vgm_index_id);
 extern int16_t* vgm_get_sampling_s16le_ref(uint32_t vgm_index_id);
 extern uint32_t vgm_play(uint32_t vgm_index_id);
@@ -24,7 +28,11 @@ static const char *TAG = "chipstream.c";
 /**
  * Create chipstream vgmplay instance
  */
-bool cs_create_vgm(uint32_t vgm_mem_id, uint32_t vgm_instance_id, uint32_t sample_rate, uint32_t sample_chunk_size)
+bool cs_create_vgm(
+    uint32_t vgm_mem_id,
+    uint32_t vgm_instance_id,
+    uint32_t sample_rate,
+    uint32_t sample_chunk_size)
 {
     // create vgm instance
     bool vgm_result = vgm_create(

@@ -54,7 +54,10 @@ vgm_state_t vgm_state;
 /**
  * load_sd_vgm_file
  */
-void load_sd_vgm_file(const char *filename, uint32_t vgm_instance_id, uint32_t vgm_mem_id)
+void load_sd_vgm_file(
+    const char *filename,
+    uint32_t vgm_instance_id,
+    uint32_t vgm_mem_id)
 {
     // SD open
     File fp = SD.open(filename);
@@ -103,7 +106,9 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
      *
      * The time is about 400ms shorter for the ESP32-S3 with PSRAM set to 80 MHz Octa.
      */
+    #if DEBUG
     uint32_t time = millis();
+    #endif
 
     uint32_t loop_count;
     int16_t *s16le = cs_stream_vgm(vgm_instance_id, &loop_count);
@@ -170,10 +175,16 @@ void setup(void)
     i2s_driver_uninstall(I2S_NUM_0);
 
     // initialize Module RCA I2S
-    init_module_rca_i2s(SAPMLING_RATE, SAMPLE_BUF_BYTES, SAMPLE_BUF_COUNT);
+    init_module_rca_i2s(
+        SAPMLING_RATE,
+        SAMPLE_BUF_BYTES,
+        SAMPLE_BUF_COUNT);
 
     // heap watch
-    heap_caps_print_heap_info(MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL | MALLOC_CAP_DEFAULT);
+    heap_caps_print_heap_info(
+        MALLOC_CAP_8BIT |
+        MALLOC_CAP_INTERNAL |
+        MALLOC_CAP_DEFAULT);
 
     // create ring buffer
     ring_buf_handle = xRingbufferCreate(
