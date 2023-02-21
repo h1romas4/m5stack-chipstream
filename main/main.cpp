@@ -19,7 +19,7 @@ static const char *TAG = "main.cpp";
  * for testing
  */
 #define DEBUG 0
-#define VGM_FILE_NAME "/M5Stack/VGM/05.vgm"
+#define VGM_FILE_NAME "/M5Stack/VGM/12.vgm"
 #define CS_MEM_INDEX_ID 0
 #define CS_VGM_INSTANCE_ID 0
 
@@ -145,7 +145,10 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
     #endif
 
     uint32_t loop_count;
-    int16_t *s16le = cs_stream_vgm(vgm_instance_id, &loop_count);
+
+    // int16_t *s16le = cs_stream_vgm_ref(vgm_instance_id, &loop_count);
+    int16_t s16le[SAMPLE_BUF_BYTES / 2];
+    cs_stream_vgm(vgm_instance_id, s16le, &loop_count);
 
     #if DEBUG
     ESP_LOGI(TAG, "written %d (%04x:%04x:%04x): render time: %d / %dms",
