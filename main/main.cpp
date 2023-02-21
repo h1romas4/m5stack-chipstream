@@ -17,7 +17,7 @@ static const char *TAG = "main.cpp";
 /**
  * for testing
  */
-#define VGM_FILE_NAME "/M5Stack/VGM/05.vgm"
+#define VGM_FILE_NAME "/M5Stack/VGM/01.vgm"
 #define CS_MEM_INDEX_ID 0
 #define CS_VGM_INSTANCE_ID 0
 
