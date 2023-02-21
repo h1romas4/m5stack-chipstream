@@ -221,6 +221,7 @@ void loop(void)
             }
             break;
         case vgm_state_t::END:
+            // TODO: wait flash ring buffer
             cs_drop_vgm(CS_VGM_INSTANCE_ID);
             vgm_state = vgm_state_t::SLEEP;
             break;
