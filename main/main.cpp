@@ -208,6 +208,10 @@ void loop(void)
                 VGM_FILE_NAME,
                 CS_VGM_INSTANCE_ID,
                 CS_MEM_INDEX_ID);
+            // pre buffre
+            for(uint32_t i = 0; i < SAMPLE_BUF_COUNT; i++) {
+               stream_vgm(CS_VGM_INSTANCE_ID);
+            }
             vgm_state = vgm_state_t::PLAYING;
             break;
         case vgm_state_t::PLAYING:
