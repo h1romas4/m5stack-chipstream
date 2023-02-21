@@ -237,5 +237,4 @@ void loop(void)
             delay(999);
             break;
     }
-    // delay(1);
 }
