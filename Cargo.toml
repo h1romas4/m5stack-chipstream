@@ -1,6 +1,0 @@
-# for rust-analyzer
-
-[workspace]
-members = [
-    "components/chipstream",
-]
