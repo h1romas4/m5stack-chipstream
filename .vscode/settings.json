@@ -9,34 +9,5 @@
         "m3_env.h": "c",
         "fib32.wasm.h": "c",
         "functional": "cpp"
-    },
-    // "rust-analyzer.cargo.target": "xtensa-esp32-espidf",
-    // "rust-analyzer.server.extraEnv": {
-    //     "CARGO_PROJECT_DIR": "${workspaceRoot}/components/chipstream",
-    //     "CARGO_BUILD_DIR": "${workspaceRoot}/build/esp-idf/chipstream",
-    //     "CARGO_TARGET_DIR": "${workspaceRoot}/build/esp-idf/chipstream/target"
-    // },
-    // "rust-analyzer.cargo.buildScripts.enable": false,
-    // "rust-analyzer.procMacro.enable": false,
-    // "rust-analyzer.linkedProjects": [
-    //     {
-    //         "sysroot_src": "~/.rustup/toolchains/esp/lib/rustlib/src/rust/library",
-    //         "crates": [
-    //             {
-    //                 "root_module": "components/chipstream/src/lib.rs",
-    //                 "edition": "2021",
-    //                 "deps": [
-    //                     "esp-idf-sys",
-    //                     "flate2",
-    //                     "nom",
-    //                     "serde",
-    //                     "serde_json",
-    //                     "serde_derive",
-    //                     "array-macro",
-    //                     "approx_eq"
-    //                 ],
-    //             },
-    //         ]
-    //     }
-    // ]
+    }
 }
