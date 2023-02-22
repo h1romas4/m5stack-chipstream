@@ -1,3 +1,4 @@
+.embuild/
 build/
 target/
 node_modules/
