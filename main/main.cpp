@@ -128,7 +128,7 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
         ring_buf_handle,
         s16le,
         SAMPLE_BUF_BYTES,
-        pdMS_TO_TICKS(1000));
+        portMAX_DELAY);
     if(res != pdTRUE) {
         ESP_LOGE(TAG, "stream_vgm: failed to xRingbufferSend");
     }
