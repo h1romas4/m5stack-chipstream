@@ -37,7 +37,7 @@ const char *play_list[3] = {
 #define SAMPLE_CHUNK_SIZE 256
 #define SAMPLE_BUF_BYTES (SAMPLE_CHUNK_SIZE * STREO * sizeof(int16_t))
 #define SAMPLE_BUF_COUNT 32
-#define SAMPLE_CHUNK_MS (SAMPLE_CHUNK_SIZE / SAPMLING_RATE * SAMPLE_BUF_COUNT * 1000)
+#define SAMPLE_BUF_MS (SAMPLE_CHUNK_SIZE / SAPMLING_RATE * SAMPLE_BUF_COUNT * 1000)
 #define RING_BUF_BYTES (SAMPLE_BUF_BYTES * SAMPLE_BUF_COUNT)
 
 /**
@@ -465,7 +465,7 @@ void loop(void)
             break;
         case player_state_t::BUFFERD:
             // TODO: wait flash ring buffer
-            delay(SAMPLE_CHUNK_MS);
+            delay(SAMPLE_BUF_MS * 2);
             player_state = player_state_t::END;
             break;
         case player_state_t::END:
