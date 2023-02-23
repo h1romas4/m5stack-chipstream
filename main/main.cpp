@@ -46,6 +46,7 @@ File debug_pcm_log;
 #define SAMPLE_BUF_BYTES (SAMPLE_CHUNK_SIZE * STREO * sizeof(int16_t))
 #define SAMPLE_BUF_COUNT 32
 #define SAMPLE_BUF_MS (SAMPLE_CHUNK_SIZE / SAPMLING_RATE * SAMPLE_BUF_COUNT * 1000)
+#define SAMPLE_CHUNK_MS (SAMPLE_CHUNK_SIZE / SAPMLING_RATE * 1000)
 #define RING_BUF_BYTES (SAMPLE_BUF_BYTES * SAMPLE_BUF_COUNT)
 
 /**
@@ -282,9 +283,6 @@ void task_cs(void *pvParameters)
                 ESP_LOGE(TAG, "not yet impliments");
                 continue;;
         }
-
-        // play loop
-        delay(1);
     }
 }
 
@@ -304,10 +302,12 @@ void task_i2s_write(void *pvParameters)
                 portMAX_DELAY,
                 SAMPLE_BUF_BYTES);
             if(item_size == SAMPLE_BUF_BYTES && s16le != NULL) {
-                // write i2s
+                // write i2s (DMA)
                 write_module_rca_i2s(s16le, SAMPLE_BUF_BYTES);
                 // return item to ring buffer
                 vRingbufferReturnItem(ring_buf_handle, (void *)s16le);
+                // wait little stream time (TODO: probably not needed and will be removed later)
+                delay(SAMPLE_CHUNK_MS / 2);
                 continue;
             }
         }
