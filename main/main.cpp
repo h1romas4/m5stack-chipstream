@@ -19,9 +19,15 @@ static const char *TAG = "main.cpp";
  * for testing
  */
 #define DEBUG 0
-#define VGM_FILE_NAME "/M5Stack/VGM/32.vgm"
 #define CS_MEM_INDEX_ID 0
 #define CS_VGM_INSTANCE_ID 0
+
+uint32_t play_list_index = 0;
+const char *play_list[3] = {
+    "/M5Stack/VGM/30.vgm",
+    "/M5Stack/VGM/31.vgm",
+    "/M5Stack/VGM/32.vgm",
+};
 
 /**
  * Audio settings
@@ -429,6 +435,7 @@ void setup(void)
         MALLOC_CAP_DEFAULT);
 
     // set state
+    play_list_index = 0;
     player_state = player_state_t::START;
 }
 
@@ -445,7 +452,7 @@ void loop(void)
             send_cs_command_init(
                 CS_VGM_INSTANCE_ID,
                 CS_MEM_INDEX_ID,
-                VGM_FILE_NAME,
+                play_list[play_list_index],
                 0);
             // fill buffre
             send_cs_command_buffer(CS_VGM_INSTANCE_ID);
@@ -463,7 +470,12 @@ void loop(void)
             break;
         case player_state_t::END:
             send_cs_command_drop(CS_VGM_INSTANCE_ID);
-            player_state = player_state_t::SLEEP;
+            play_list_index++;
+            if(play_list_index < sizeof(play_list) / sizeof(play_list[0])) {
+                player_state = player_state_t::START;
+            } else {
+                player_state = player_state_t::SLEEP;
+            }
             break;
         default:
             ESP_LOGI(TAG, "sleeping..zzz");
