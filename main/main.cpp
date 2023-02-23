@@ -448,6 +448,8 @@ void loop(void)
 
     switch (player_state) {
         case player_state_t::START:
+            // clear I2S DMA buffer
+            clear_dma_module_rca_i2s();
             // load and init vgm instance
             send_cs_command_init(
                 CS_VGM_INSTANCE_ID,
@@ -471,8 +473,6 @@ void loop(void)
         case player_state_t::END:
             // drop chipstream instance
             send_cs_command_drop(CS_VGM_INSTANCE_ID);
-            // clear I2S DMA buffer
-            clear_dma_buffer();
             // next play
             play_list_index++;
             if(play_list_index < sizeof(play_list) / sizeof(play_list[0])) {

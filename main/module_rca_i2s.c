@@ -34,15 +34,12 @@ void init_module_rca_i2s(uint32_t sample_rate, uint32_t dma_buf_len, uint32_t dm
         .data_in_num = I2S_PIN_NO_CHANGE
     };
     ESP_ERROR_CHECK(i2s_set_pin(I2S_NUM_1, &i2s_pin_config));
-
-    // clear DMA
-    i2s_zero_dma_buffer(I2S_NUM_1);
 }
 
 /**
- * clear_dma_buffer
+ * clear_dma_module_rca_i2s
  */
-void clear_dma_buffer(void)
+void clear_dma_module_rca_i2s(void)
 {
     i2s_zero_dma_buffer(I2S_NUM_1);
 }
