@@ -11,7 +11,7 @@ The repository is a work in progress. Still slow and impractical.
 
 ## TODO
 
-- [ ] The transfer of PCM waveforms from Rust to C is shifted depending on the memory state. (Is it due to alignment?)
+- [x] The transfer of PCM waveforms from Rust to C is shifted depending on the memory state. (Is it due to int16_t alignment?)
 - [ ] There is no interface to stop playback.
 
 ## Build
