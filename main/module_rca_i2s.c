@@ -40,6 +40,14 @@ void init_module_rca_i2s(uint32_t sample_rate, uint32_t dma_buf_len, uint32_t dm
 }
 
 /**
+ * clear_dma_buffer
+ */
+void clear_dma_buffer(void)
+{
+    i2s_zero_dma_buffer(I2S_NUM_1);
+}
+
+/**
  * Module RCA I2S write
  */
 void write_module_rca_i2s(int16_t *s16le, uint32_t bytes)

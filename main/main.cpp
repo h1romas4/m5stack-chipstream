@@ -274,7 +274,7 @@ void task_i2s_write(void *pvParameters)
             int16_t *s16le = (int16_t *)xRingbufferReceiveUpTo(
                 ring_buf_handle,
                 &item_size,
-                pdMS_TO_TICKS(999),
+                portMAX_DELAY,
                 SAMPLE_BUF_BYTES);
             if(item_size == SAMPLE_BUF_BYTES && s16le != NULL) {
                 // write i2s
@@ -469,7 +469,11 @@ void loop(void)
             player_state = player_state_t::END;
             break;
         case player_state_t::END:
+            // drop chipstream instance
             send_cs_command_drop(CS_VGM_INSTANCE_ID);
+            // clear I2S DMA buffer
+            clear_dma_buffer();
+            // next play
             play_list_index++;
             if(play_list_index < sizeof(play_list) / sizeof(play_list[0])) {
                 player_state = player_state_t::START;
