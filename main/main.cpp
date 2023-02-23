@@ -19,7 +19,7 @@ static const char *TAG = "main.cpp";
  * for testing
  */
 #define DEBUG 0
-#define VGM_FILE_NAME "/M5Stack/VGM/12.vgm"
+#define VGM_FILE_NAME "/M5Stack/VGM/32.vgm"
 #define CS_MEM_INDEX_ID 0
 #define CS_VGM_INSTANCE_ID 0
 
@@ -269,7 +269,7 @@ void task_i2s_write(void *pvParameters)
                 &item_size,
                 pdMS_TO_TICKS(999),
                 SAMPLE_BUF_BYTES);
-            if(item_size == SAMPLE_BUF_BYTES) {
+            if(item_size == SAMPLE_BUF_BYTES && s16le != NULL) {
                 // write i2s
                 write_module_rca_i2s(s16le, SAMPLE_BUF_BYTES);
                 // return item to ring buffer
