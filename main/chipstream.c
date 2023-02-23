@@ -7,6 +7,9 @@
 /**
  * Rust chipstream(vgmplay) interface
  *
+ * Be sure to call them from the same thread,
+ * and the stack size should be 64KB or larger.
+ *
  * Originally, bindgen is used to generate them.
  */
 extern uint32_t vgm_create(

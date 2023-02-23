@@ -5,6 +5,7 @@
  */
 #include <freertos/FreeRTOS.h>
 #include <freertos/ringbuf.h>
+#include <freertos/queue.h>
 #include <Arduino.h>
 #include <M5Core2.h>
 #include <esp_task_wdt.h>
@@ -17,10 +18,10 @@ static const char *TAG = "main.cpp";
 /**
  * for testing
  */
-#define VGM_FILE_NAME "/M5Stack/VGM/01.vgm"
+#define DEBUG 0
+#define VGM_FILE_NAME "/M5Stack/VGM/05.vgm"
 #define CS_MEM_INDEX_ID 0
 #define CS_VGM_INSTANCE_ID 0
-#define DEBUG 0
 
 /**
  * Audio settings
@@ -33,31 +34,64 @@ static const char *TAG = "main.cpp";
 #define RING_BUF_BYTES (SAMPLE_BUF_BYTES * SAMPLE_BUF_COUNT)
 
 /**
- * Handler
+ * System settings
  */
-TaskHandle_t task_i2s_write_handle = NULL;
-RingbufHandle_t ring_buf_handle;
+#define CS_TASK_STACK_SIZE 65535
+#define IS2_TASK_STACK_SIZE 8192
+#define MESSAGE_QUEUE_SIZE 10
 
 /**
- * Play state
+ * Handler
+ */
+TaskHandle_t task_i2s_write_handle;
+TaskHandle_t task_cs_handle;
+RingbufHandle_t ring_buf_handle;
+QueueHandle_t queue_cs_command_handle;
+QueueHandle_t queue_cs_state_handle;
+
+/**
+ * chipstream messega queue
  */
 typedef enum {
-  STRAT,
+    CS_CMD_LOAD,
+    CS_CMD_FILL_BUFFER,
+    CS_CMD_STREAM,
+    CS_CMD_DROP
+} cs_command_t;
+
+typedef struct cs_command_message {
+    cs_command_t cs_command;
+    uint32_t vgm_instance_id;
+    uint32_t vgm_mem_id;
+    const char* filename;
+    uint32_t loop_max_count;
+} cs_command_message_t;
+
+typedef struct cs_state_message {
+    cs_command_t cs_state;
+    uint32_t remain_chunk_count;
+} cs_state_message_t;
+
+/**
+ * Player state
+ */
+typedef enum {
+  START,
   PLAYING,
   BUFFERD,
   END,
   SLEEP
-} vgm_state_t;
+} player_state_t;
 
-vgm_state_t vgm_state;
+player_state_t player_state;
 
 /**
  * load_sd_vgm_file
  */
 void load_sd_vgm_file(
-    const char *filename,
     uint32_t vgm_instance_id,
-    uint32_t vgm_mem_id)
+    uint32_t vgm_mem_id,
+    const char *filename)
 {
     // SD open
     File fp = SD.open(filename);
@@ -123,7 +157,7 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
         (uint32_t)(millis() - time));
     #endif
 
-    // stream to ring buffer (copy)
+    // stream copy to ring buffer (block if buffer is filled)
     UBaseType_t res = xRingbufferSend(
         ring_buf_handle,
         s16le,
@@ -137,15 +171,96 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
 }
 
 /**
- * I2S write task
+ * chipstream task (core 0)
+ */
+void task_cs(void *pvParameters)
+{
+    // disable core 0 watch dog
+    #if !DEBUG
+    esp_task_wdt_init(3600, false);
+    #endif
+
+    cs_command_message_t cmd;
+
+    while(1) {
+        // wait command queue (block)
+        if(xQueueReceive(
+            queue_cs_command_handle, &cmd, portMAX_DELAY) != pdPASS) {
+            ESP_LOGE(TAG, "xQueueReceive");
+            continue;
+        }
+        cs_state_message_t state;
+        switch (cmd.cs_command) {
+            case cs_command_t::CS_CMD_LOAD:
+                // init cs and load vgm
+                load_sd_vgm_file(
+                    cmd.vgm_instance_id,
+                    cmd.vgm_mem_id,
+                    cmd.filename
+                );
+                // return state
+                state.cs_state = cmd.cs_command;
+                xQueueSend(
+                    queue_cs_state_handle,
+                    &state,
+                    portMAX_DELAY);
+                // wait for next command
+                continue;
+            case cs_command_t::CS_CMD_FILL_BUFFER:
+                // fill buffer
+                for(uint32_t i = 0; i < SAMPLE_BUF_COUNT; i++) {
+                    stream_vgm(cmd.vgm_instance_id);
+                }
+                // return state
+                state.cs_state = cmd.cs_command;
+                xQueueSend(
+                    queue_cs_state_handle,
+                    &state,
+                    portMAX_DELAY);
+                // wait for next command
+                continue;
+            case cs_command_t::CS_CMD_STREAM:
+                // stream (TODO: loop count)
+                while(stream_vgm(cmd.vgm_instance_id) == 0);
+                // return state
+                state.cs_state = cmd.cs_command;
+                xQueueSend(
+                    queue_cs_state_handle,
+                    &state,
+                    portMAX_DELAY);
+                // wait for next command
+                break;
+            case cs_command_t::CS_CMD_DROP:
+                // drop instance
+                cs_drop_vgm(cmd.vgm_instance_id);
+                // return state
+                state.cs_state = cmd.cs_command;
+                xQueueSend(
+                    queue_cs_state_handle,
+                    &state,
+                    portMAX_DELAY);
+                // wait for next command
+                break;
+            default:
+                ESP_LOGE(TAG, "not yet impliments");
+                continue;;
+        }
+
+        // play loop
+        delay(1);
+    }
+}
+
+/**
+ * I2S write task (core 1)
  */
 void task_i2s_write(void *pvParameters)
 {
     while(1) {
-        if(vgm_state == vgm_state_t::PLAYING
-            || vgm_state == vgm_state_t::BUFFERD) {
+        if(player_state == player_state_t::PLAYING
+            || player_state == player_state_t::BUFFERD) {
             size_t item_size;
-            // wait sample (SAMPLE_BUF_BYTES)
+            // wait sample SAMPLE_BUF_BYTES (block)
             int16_t *s16le = (int16_t *)xRingbufferReceiveUpTo(
                 ring_buf_handle,
                 &item_size,
@@ -161,6 +276,93 @@ void task_i2s_write(void *pvParameters)
         }
         delay(1);
     }
+}
+
+/**
+ * transmit_receive_cs_command
+ */
+bool transmit_receive_cs_command(
+    cs_command_message_t cmd,
+    cs_state_message_t msg)
+{
+    xQueueSend(queue_cs_command_handle, &cmd, portMAX_DELAY);
+    if(xQueueReceive(queue_cs_state_handle, &msg, portMAX_DELAY) != pdPASS) {
+        ESP_LOGE(TAG, "transmit_receive_cs_command xQueueReceive");
+        return false;
+    }
+    if(cmd.cs_command != msg.cs_state) {
+        ESP_LOGE(TAG, "transmit_receive_cs_command cs_command");
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * send_cs_command_drop
+ */
+void send_cs_command_drop(uint32_t vgm_instance_id)
+{
+    // create init command
+    cs_command_message_t cmd;
+    cmd.cs_command = cs_command_t::CS_CMD_DROP;
+    cmd.vgm_instance_id = vgm_instance_id;
+    // receive state
+    cs_state_message_t state;
+    transmit_receive_cs_command(cmd, state);
+    // TODO: if state
+}
+
+/**
+ * send_cs_command_stream
+ */
+void send_cs_command_stream(uint32_t vgm_instance_id)
+{
+    // create init command
+    cs_command_message_t cmd;
+    cmd.cs_command = cs_command_t::CS_CMD_STREAM;
+    cmd.vgm_instance_id = vgm_instance_id;
+    // TODO: do not wait receive state
+    cs_state_message_t state;
+    transmit_receive_cs_command(cmd, state);
+    // TODO: if state
+}
+
+/**
+ * send_cs_command_buffer
+ */
+void send_cs_command_buffer(uint32_t vgm_instance_id)
+{
+    // create init command
+    cs_command_message_t cmd;
+    cmd.cs_command = cs_command_t::CS_CMD_FILL_BUFFER;
+    cmd.vgm_instance_id = vgm_instance_id;
+    // receive state
+    cs_state_message_t state;
+    transmit_receive_cs_command(cmd, state);
+    // TODO: if state
+}
+
+/**
+ * send_cs_command_init
+ */
+void send_cs_command_init(
+    uint32_t vgm_instance_id,
+    uint32_t vgm_mem_id,
+    const char * filename,
+    uint32_t loop_max_count)
+{
+    // create init command
+    cs_command_message_t cmd;
+    cmd.cs_command = cs_command_t::CS_CMD_LOAD;
+    cmd.vgm_instance_id = vgm_instance_id;
+    cmd.vgm_mem_id = vgm_mem_id;
+    cmd.filename = filename;
+    cmd.loop_max_count = loop_max_count;
+    // receive state
+    cs_state_message_t state;
+    transmit_receive_cs_command(cmd, state);
+    // TODO: if state
 }
 
 /**
@@ -180,12 +382,6 @@ void setup(void)
         SAMPLE_BUF_BYTES,
         SAMPLE_BUF_COUNT);
 
-    // heap watch
-    heap_caps_print_heap_info(
-        MALLOC_CAP_8BIT |
-        MALLOC_CAP_INTERNAL |
-        MALLOC_CAP_DEFAULT);
-
     // create ring buffer
     ring_buf_handle = xRingbufferCreate(
         RING_BUF_BYTES,
@@ -194,18 +390,42 @@ void setup(void)
         ESP_LOGE(TAG, "Falied to create ring_buf_handle");
     }
 
-    // create I2S write task
+    // create message queue
+    queue_cs_command_handle = xQueueCreate(
+        MESSAGE_QUEUE_SIZE,
+        sizeof(struct cs_command_message));
+    queue_cs_state_handle = xQueueCreate(
+        MESSAGE_QUEUE_SIZE,
+        sizeof(struct cs_state_message));
+
+    // create chipstream task on ESP32 core 0
+    xTaskCreateUniversal(
+        task_cs,
+        "task_cs",
+        CS_TASK_STACK_SIZE,
+        NULL,
+        configMAX_PRIORITIES - 1,
+        &task_cs_handle,
+        PRO_CPU_NUM);
+
+    // create I2S write task on ESP32 core 1
     xTaskCreateUniversal(
         task_i2s_write,
         "task_i2s_write",
-        8192,
+        IS2_TASK_STACK_SIZE,
         NULL,
-        configMAX_PRIORITIES - 1,
+        2,
         &task_i2s_write_handle,
         CONFIG_ARDUINO_RUNNING_CORE);
 
+    // heap watch
+    heap_caps_print_heap_info(
+        MALLOC_CAP_8BIT |
+        MALLOC_CAP_INTERNAL |
+        MALLOC_CAP_DEFAULT);
+
     // set state
-    vgm_state = vgm_state_t::STRAT;
+    player_state = player_state_t::START;
 }
 
 /**
@@ -215,37 +435,34 @@ void loop(void)
 {
     M5.update();
 
-    switch (vgm_state) {
-        case vgm_state_t::STRAT:
+    switch (player_state) {
+        case player_state_t::START:
             // load and init vgm instance
-            load_sd_vgm_file(
-                VGM_FILE_NAME,
+            send_cs_command_init(
                 CS_VGM_INSTANCE_ID,
-                CS_MEM_INDEX_ID);
-            // pre buffre
-            for(uint32_t i = 0; i < SAMPLE_BUF_COUNT; i++) {
-               stream_vgm(CS_VGM_INSTANCE_ID);
-            }
-            vgm_state = vgm_state_t::PLAYING;
+                CS_MEM_INDEX_ID,
+                VGM_FILE_NAME,
+                0);
+            // fill buffre
+            send_cs_command_buffer(CS_VGM_INSTANCE_ID);
+            player_state = player_state_t::PLAYING;
             break;
-        case vgm_state_t::PLAYING:
-            // stream
-            if(stream_vgm(CS_VGM_INSTANCE_ID) > 0) {
-                vgm_state = vgm_state_t::BUFFERD;
-            }
+        case player_state_t::PLAYING:
+            // stream (TODO: do not blocked)
+            send_cs_command_stream(CS_VGM_INSTANCE_ID);
+            player_state = player_state_t::BUFFERD;
             break;
-        case vgm_state_t::BUFFERD:
-            // TODO: flash ring buffer
-            vgm_state = vgm_state_t::END;
-            break;
-        case vgm_state_t::END:
+        case player_state_t::BUFFERD:
             // TODO: wait flash ring buffer
-            cs_drop_vgm(CS_VGM_INSTANCE_ID);
-            vgm_state = vgm_state_t::SLEEP;
+            player_state = player_state_t::END;
+            break;
+        case player_state_t::END:
+            send_cs_command_drop(CS_VGM_INSTANCE_ID);
+            player_state = player_state_t::SLEEP;
             break;
         default:
             ESP_LOGI(TAG, "sleeping..zzz");
-            delay(999);
+            delay(1000);
             break;
     }
 }
