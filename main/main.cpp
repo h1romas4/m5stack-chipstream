@@ -18,7 +18,6 @@ static const char *TAG = "main.cpp";
 /**
  * for testing
  */
-#define DEBUG 0
 #define CS_MEM_INDEX_ID 0
 #define CS_VGM_INSTANCE_ID 0
 
@@ -28,6 +27,15 @@ const char *play_list[3] = {
     "/M5Stack/VGM/31.vgm",
     "/M5Stack/VGM/32.vgm",
 };
+
+/**
+ * for debug
+ */
+#define DEBUG 0
+#define DEBUG_PCM_LOG 0
+#if DEBUG_PCM_LOG
+File debug_pcm_log;
+#endif
 
 /**
  * Audio settings
@@ -113,6 +121,7 @@ void load_sd_vgm_file(
     ESP_LOGI(TAG, "read vgm file(%d)", read_vgm_size);
     fp.close();
     if(vgm_size != read_vgm_size) {
+        // TODO: excaption handling
         ESP_LOGE(TAG, "read vgm error(%d)", read_vgm_size);
     }
 
@@ -167,6 +176,11 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
         (uint32_t)(millis() - time));
     #endif
 
+    // PCM log for debug
+    #if DEBUG_PCM_LOG
+    debug_pcm_log.write((uint8_t *)s16le, SAMPLE_BUF_BYTES);
+    #endif
+
     // stream copy to ring buffer (block if buffer is filled)
     UBaseType_t res = xRingbufferSend(
         ring_buf_handle,
@@ -208,6 +222,15 @@ void task_cs(void *pvParameters)
                     cmd.vgm_mem_id,
                     cmd.filename
                 );
+                // PCM log for debug
+                #if DEBUG_PCM_LOG
+                char debug_pcm_log_name[255];
+                strncpy(debug_pcm_log_name, cmd.filename, sizeof(debug_pcm_log_name) - 1);
+                debug_pcm_log_name[strlen(cmd.filename) - 4] = NULL; // 4: remove extention
+                strncat(debug_pcm_log_name, ".pcm", sizeof(debug_pcm_log_name) - 1);
+                ESP_LOGI(TAG, "debug_pcm_log_name: %s", debug_pcm_log_name);
+                debug_pcm_log = SD.open(debug_pcm_log_name, "wb", true);
+                #endif
                 // return state
                 state.cs_state = cmd.cs_command;
                 xQueueSend(
@@ -241,6 +264,10 @@ void task_cs(void *pvParameters)
                 // wait for next command
                 break;
             case cs_command_t::CS_CMD_DROP:
+                // PCM log for debug
+                #if DEBUG_PCM_LOG
+                debug_pcm_log.close();
+                #endif
                 // drop instance
                 cs_drop_vgm(cmd.vgm_instance_id);
                 // return state
