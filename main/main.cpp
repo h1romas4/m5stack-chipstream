@@ -313,7 +313,7 @@ void task_i2s_write(void *pvParameters)
             if(item_size == SAMPLE_CHUNK_BYTES && s16le != NULL) {
                 // write i2s (DMA)
                 write_module_rca_i2s(s16le, SAMPLE_CHUNK_BYTES);
-                // return item to ring buffer
+                // return item to ring buffer (mark finished reading)
                 vRingbufferReturnItem(ring_buf_handle, (void *)s16le);
                 // wait little stream time (TODO: probably not needed and will be removed later)
                 delay(SAMPLE_CHUNK_MS / 2);
