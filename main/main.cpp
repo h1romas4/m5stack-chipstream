@@ -460,7 +460,7 @@ void setup(void)
         SAMPLE_CHUNK_HOLD);
 
     // alloc ring buffer storage (for DMA and only 32-bit aligned size)
-    //  TODO: MALLOC_CAP_RETENTION
+    //  TODO: MALLOC_CAP_RETENTION (not necessary for i2s_write?)
     ring_buf = (uint8_t *)heap_caps_malloc(
         SAMPLE_BUF_BYTES,
         MALLOC_CAP_DEFAULT);
