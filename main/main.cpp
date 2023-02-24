@@ -43,11 +43,11 @@ File debug_pcm_log;
 #define STREO 2
 #define SAPMLING_RATE 44100
 #define SAMPLE_CHUNK_SIZE 256
-#define SAMPLE_CHUNK_COUNT 32
+#define SAMPLE_CHUNK_HOLD 32
 #define SAMPLE_CHUNK_BYTES (SAMPLE_CHUNK_SIZE * STREO * sizeof(int16_t))
 #define SAMPLE_CHUNK_MS (SAMPLE_CHUNK_SIZE / SAPMLING_RATE * 1000)
-#define SAMPLE_BUF_BYTES (SAMPLE_CHUNK_BYTES * SAMPLE_CHUNK_COUNT)
-#define SAMPLE_BUF_MS (SAMPLE_CHUNK_MS * SAMPLE_CHUNK_COUNT * 1000)
+#define SAMPLE_BUF_BYTES (SAMPLE_CHUNK_BYTES * SAMPLE_CHUNK_HOLD)
+#define SAMPLE_BUF_MS (SAMPLE_CHUNK_MS * SAMPLE_CHUNK_HOLD * 1000)
 
 /**
  * System settings
@@ -242,7 +242,7 @@ void task_cs(void *pvParameters)
                 continue;
             case cs_command_t::CS_CMD_FILL_BUFFER:
                 // fill buffer
-                for(uint32_t i = 0; i < SAMPLE_CHUNK_COUNT; i++) {
+                for(uint32_t i = 0; i < SAMPLE_CHUNK_HOLD; i++) {
                     stream_vgm(cmd.vgm_instance_id);
                 }
                 // return state
@@ -417,7 +417,7 @@ void setup(void)
     init_module_rca_i2s(
         SAPMLING_RATE,
         SAMPLE_CHUNK_BYTES,
-        SAMPLE_CHUNK_COUNT);
+        SAMPLE_CHUNK_HOLD);
 
     // create ring buffer
     ring_buf_handle = xRingbufferCreate(
