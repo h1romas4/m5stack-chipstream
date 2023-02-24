@@ -104,6 +104,7 @@ typedef enum {
   PLAYING,
   BUFFERD,
   END,
+  DESTRUCT,
   SLEEP
 } player_state_t;
 
@@ -413,6 +414,35 @@ void send_cs_command_init(
 }
 
 /**
+ * Destruct
+ */
+void destruct(void)
+{
+    // delete task
+    vTaskDelete(task_i2s_write_handle);
+    vTaskDelete(task_cs_handle);
+
+    // delete message queue
+    vQueueDelete(queue_cs_state_handle);
+    vQueueDelete(queue_cs_command_handle);
+
+    // delete ring buffer
+    vRingbufferDelete(ring_buf_handle);
+    // free ring buffer
+    free(ring_buf_struct);
+    free(ring_buf);
+
+    // uninstall Module RCA I2S
+    i2s_driver_uninstall(I2S_NUM_1);
+
+    // heap watch
+    heap_caps_print_heap_info(
+        MALLOC_CAP_8BIT |
+        MALLOC_CAP_INTERNAL |
+        MALLOC_CAP_DEFAULT);
+}
+
+/**
  * Arduino setup
  */
 void setup(void)
@@ -528,8 +558,12 @@ void loop(void)
             if(play_list_index < sizeof(play_list) / sizeof(play_list[0])) {
                 player_state = player_state_t::START;
             } else {
-                player_state = player_state_t::SLEEP;
+                player_state = player_state_t::DESTRUCT;
             }
+            break;
+        case player_state_t::DESTRUCT:
+            destruct();
+            player_state = player_state_t::SLEEP;
             break;
         default:
             ESP_LOGI(TAG, "sleeping..zzz");
