@@ -272,7 +272,7 @@ void task_cs(void *pvParameters)
                     &state,
                     portMAX_DELAY);
                 // wait for next command
-                break;
+                continue;
             case cs_command_t::CS_CMD_DROP:
                 // PCM log for debug
                 #if DEBUG_PCM_LOG
@@ -287,10 +287,10 @@ void task_cs(void *pvParameters)
                     &state,
                     portMAX_DELAY);
                 // wait for next command
-                break;
+                continue;
             default:
                 ESP_LOGE(TAG, "not yet impliments");
-                continue;;
+                continue;
         }
     }
 }
