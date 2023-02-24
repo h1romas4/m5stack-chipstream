@@ -309,6 +309,8 @@ void task_i2s_write(void *pvParameters)
                 // wait little stream time (TODO: probably not needed and will be removed later)
                 delay(SAMPLE_CHUNK_MS / 2);
                 continue;
+            } else {
+                ESP_LOGE(TAG, "xRingbufferReceiveUpTo: %d", item_size);
             }
         }
         delay(1);
