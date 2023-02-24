@@ -39,6 +39,8 @@ File debug_pcm_log;
 
 /**
  * Audio settings
+ *
+ * SAMPLE_BUF_BYTES = 32-bit aligned size
  */
 #define STREO 2
 #define SAPMLING_RATE 44100
@@ -64,6 +66,12 @@ TaskHandle_t task_cs_handle;
 RingbufHandle_t ring_buf_handle;
 QueueHandle_t queue_cs_command_handle;
 QueueHandle_t queue_cs_state_handle;
+
+/**
+ * Ring buffer
+ */
+uint8_t *ring_buf;
+StaticRingbuffer_t *ring_buf_struct;
 
 /**
  * chipstream messega queue
@@ -421,10 +429,23 @@ void setup(void)
         SAMPLE_CHUNK_BYTES,
         SAMPLE_CHUNK_HOLD);
 
-    // create ring buffer
-    ring_buf_handle = xRingbufferCreate(
+    // alloc ring buffer storage (for DMA and only 32-bit aligned size)
+    //  TODO: MALLOC_CAP_RETENTION
+    ring_buf = (uint8_t *)heap_caps_malloc(
         SAMPLE_BUF_BYTES,
-        RINGBUF_TYPE_BYTEBUF);
+        MALLOC_CAP_DEFAULT);
+    // alloc ring buffer struct (SRAM)
+    //  TODO: MALLOC_CAP_INTERNAL
+    ring_buf_struct = (StaticRingbuffer_t *)heap_caps_malloc(
+        sizeof(StaticRingbuffer_t),
+        MALLOC_CAP_DEFAULT);
+
+    // create ring buffer
+    ring_buf_handle = xRingbufferCreateStatic(
+        SAMPLE_BUF_BYTES,
+        RINGBUF_TYPE_BYTEBUF,
+        ring_buf,
+        ring_buf_struct);
     if(ring_buf_handle == nullptr) {
         ESP_LOGE(TAG, "Falied to create ring_buf_handle");
     }
