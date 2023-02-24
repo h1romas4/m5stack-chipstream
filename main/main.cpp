@@ -43,11 +43,11 @@ File debug_pcm_log;
 #define STREO 2
 #define SAPMLING_RATE 44100
 #define SAMPLE_CHUNK_SIZE 256
-#define SAMPLE_BUF_BYTES (SAMPLE_CHUNK_SIZE * STREO * sizeof(int16_t))
-#define SAMPLE_BUF_COUNT 32
-#define SAMPLE_BUF_MS (SAMPLE_CHUNK_SIZE / SAPMLING_RATE * SAMPLE_BUF_COUNT * 1000)
+#define SAMPLE_CHUNK_COUNT 32
+#define SAMPLE_CHUNK_BYTES (SAMPLE_CHUNK_SIZE * STREO * sizeof(int16_t))
 #define SAMPLE_CHUNK_MS (SAMPLE_CHUNK_SIZE / SAPMLING_RATE * 1000)
-#define RING_BUF_BYTES (SAMPLE_BUF_BYTES * SAMPLE_BUF_COUNT)
+#define SAMPLE_BUF_BYTES (SAMPLE_CHUNK_BYTES * SAMPLE_CHUNK_COUNT)
+#define SAMPLE_BUF_MS (SAMPLE_CHUNK_MS * SAMPLE_CHUNK_COUNT * 1000)
 
 /**
  * System settings
@@ -164,12 +164,12 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
     uint32_t loop_count;
 
     // int16_t *s16le = cs_stream_vgm_ref(vgm_instance_id, &loop_count);
-    int16_t s16le[SAMPLE_BUF_BYTES / 2];
+    int16_t s16le[SAMPLE_CHUNK_BYTES / 2];
     cs_stream_vgm(vgm_instance_id, s16le, &loop_count);
 
     #if DEBUG
     ESP_LOGI(TAG, "written %d (%04x:%04x:%04x): render time: %d / %dms",
-        SAMPLE_BUF_BYTES,
+        SAMPLE_CHUNK_BYTES,
         (uint16_t)s16le[0],
         (uint16_t)s16le[1],
         (uint16_t)s16le[SAMPLE_CHUNK_SIZE - 1],
@@ -179,14 +179,14 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
 
     // PCM log for debug
     #if DEBUG_PCM_LOG
-    debug_pcm_log.write((uint8_t *)s16le, SAMPLE_BUF_BYTES);
+    debug_pcm_log.write((uint8_t *)s16le, SAMPLE_CHUNK_BYTES);
     #endif
 
     // stream copy to ring buffer (block if buffer is filled)
     UBaseType_t res = xRingbufferSend(
         ring_buf_handle,
         s16le,
-        SAMPLE_BUF_BYTES,
+        SAMPLE_CHUNK_BYTES,
         portMAX_DELAY);
     if(res != pdTRUE) {
         ESP_LOGE(TAG, "stream_vgm: failed to xRingbufferSend");
@@ -242,7 +242,7 @@ void task_cs(void *pvParameters)
                 continue;
             case cs_command_t::CS_CMD_FILL_BUFFER:
                 // fill buffer
-                for(uint32_t i = 0; i < SAMPLE_BUF_COUNT; i++) {
+                for(uint32_t i = 0; i < SAMPLE_CHUNK_COUNT; i++) {
                     stream_vgm(cmd.vgm_instance_id);
                 }
                 // return state
@@ -295,15 +295,15 @@ void task_i2s_write(void *pvParameters)
         if(player_state == player_state_t::PLAYING
             || player_state == player_state_t::BUFFERD) {
             size_t item_size;
-            // wait sample SAMPLE_BUF_BYTES (block)
+            // wait sample SAMPLE_CHUNK_BYTES (block)
             int16_t *s16le = (int16_t *)xRingbufferReceiveUpTo(
                 ring_buf_handle,
                 &item_size,
                 portMAX_DELAY,
-                SAMPLE_BUF_BYTES);
-            if(item_size == SAMPLE_BUF_BYTES && s16le != NULL) {
+                SAMPLE_CHUNK_BYTES);
+            if(item_size == SAMPLE_CHUNK_BYTES && s16le != NULL) {
                 // write i2s (DMA)
-                write_module_rca_i2s(s16le, SAMPLE_BUF_BYTES);
+                write_module_rca_i2s(s16le, SAMPLE_CHUNK_BYTES);
                 // return item to ring buffer
                 vRingbufferReturnItem(ring_buf_handle, (void *)s16le);
                 // wait little stream time (TODO: probably not needed and will be removed later)
@@ -416,12 +416,12 @@ void setup(void)
     // initialize Module RCA I2S
     init_module_rca_i2s(
         SAPMLING_RATE,
-        SAMPLE_BUF_BYTES,
-        SAMPLE_BUF_COUNT);
+        SAMPLE_CHUNK_BYTES,
+        SAMPLE_CHUNK_COUNT);
 
     // create ring buffer
     ring_buf_handle = xRingbufferCreate(
-        RING_BUF_BYTES,
+        SAMPLE_BUF_BYTES,
         RINGBUF_TYPE_BYTEBUF);
     if(ring_buf_handle == nullptr) {
         ESP_LOGE(TAG, "Falied to create ring_buf_handle");
