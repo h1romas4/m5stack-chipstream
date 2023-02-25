@@ -6,6 +6,10 @@ static const char *TAG = "module_rca_i2s.c";
 
 /**
  * Module RCA I2S(PCM5102APWR) initilize
+ *
+ *  Note that it should be set to I2S_COMM_FORMAT_STAND_I2S.
+ *  In I2S_COMM_FORMAT_STAND_MSB, the first bit of PCM is shifted by 1 bit,
+ *  resulting in the first 1 bit of PCM being ignored.
  */
 void init_module_rca_i2s(uint32_t sample_rate, uint32_t dma_buf_len, uint32_t dma_buf_count)
 {

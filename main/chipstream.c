@@ -84,10 +84,6 @@ uint32_t vgm_get_sampling_stub(
 
     /**
      * singed int square wave generation
-     *
-     * i2s_config
-     *  I2S_COMM_FORMAT_STAND_I2S ; OK
-     *  I2S_COMM_FORMAT_STAND_MSB : Is the leading 1 bit out of alignment??
      */
     for (uint32_t i = 0; i < sample_chunk_size; i++) {
         uint32_t j = sample_pos % period;
@@ -105,7 +101,7 @@ uint32_t vgm_get_sampling_stub(
         }
     }
 
-    // loop count
+    // loop count (10 sec)
     if(time > 10) {
         sample_pos = 0;
         time = 0;
@@ -122,6 +118,7 @@ void cs_stream_vgm(uint32_t vgm_instance_id, int16_t *s16le, uint32_t *loop_coun
     *loop_count = vgm_play(vgm_instance_id);
     vgm_get_sampling_s16le(vgm_instance_id, s16le);
 
+    // To perform a sound test, disable the top two lines and enable the bottom line.
     // *loop_count = vgm_get_sampling_stub(44100, 256, 440, s16le);
 }
 

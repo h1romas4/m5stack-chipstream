@@ -12,7 +12,8 @@ The repository is a work in progress. Still slow and impractical.
 ## TODO
 
 - [x] The transfer of PCM waveforms from Rust to C is shifted depending on the memory state. (Is it due to int16_t alignment?)
-- [ ] I may be using the ring buffer or I2S DMA incorrectly. The process slows down from the same time, independent of the waveform generation process time.
+- [x] I may be using the ring buffer or I2S DMA incorrectly. The process slows down from the same time, independent of the waveform generation process time.
+- [ ] Player control is not complete. May stop when transitioning to next song.
 - [ ] There is no interface to stop playback.
 
 ## Build
