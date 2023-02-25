@@ -62,12 +62,67 @@ bool cs_create_vgm(
 }
 
 /**
+ * Generate waveform for test
+ *
+ * This is a stub that generates square waves at high speed
+ * instead of chipstream waveform operations.
+ *
+ * This stub is used to check if the slowdown in playback
+ * is due to a delay in waveform generation or buffer control.
+ */
+uint32_t vgm_get_sampling_stub(
+    uint32_t sample_rate,
+    uint32_t sample_chunk_size,
+    uint32_t square_hz,
+    int16_t *s16le)
+{
+    static uint32_t sample_pos = 0;
+    static uint32_t time = 0;
+
+    uint32_t period = (uint32_t)(sample_rate / square_hz);
+    uint32_t half_period = period / 2;
+
+    /**
+     * singed int square wave generation
+     *
+     * i2s_config
+     *  I2S_COMM_FORMAT_STAND_I2S ; OK
+     *  I2S_COMM_FORMAT_STAND_MSB : Is the leading 1 bit out of alignment??
+     */
+    for (uint32_t i = 0; i < sample_chunk_size; i++) {
+        uint32_t j = sample_pos % period;
+        if (j < half_period) {
+            s16le[i * 2] = 32767;
+            s16le[i * 2 + 1] = 32767;
+        } else {
+            s16le[i * 2] = -32768;
+            s16le[i * 2 + 1] = -32768;
+        }
+        sample_pos++;
+        if(sample_pos >= sample_rate) {
+            sample_pos = 0;
+            time++;
+        }
+    }
+
+    // loop count
+    if(time > 10) {
+        sample_pos = 0;
+        time = 0;
+        return 1;
+    }
+    return 0;
+}
+
+/**
  * Tick and stream vgmplay instance by sample_chunk_size
  */
 void cs_stream_vgm(uint32_t vgm_instance_id, int16_t *s16le, uint32_t *loop_count)
 {
     *loop_count = vgm_play(vgm_instance_id);
     vgm_get_sampling_s16le(vgm_instance_id, s16le);
+
+    // *loop_count = vgm_get_sampling_stub(44100, 256, 440, s16le);
 }
 
 /**

@@ -177,10 +177,11 @@ uint32_t stream_vgm(uint32_t vgm_instance_id) {
     cs_stream_vgm(vgm_instance_id, s16le, &loop_count);
 
     #if DEBUG
-    ESP_LOGI(TAG, "written %d (%04x:%04x:%04x): render time: %d / %dms",
+    ESP_LOGI(TAG, "written %d (%04x:%04x:%04x:%04x): render time: %d / %dms",
         SAMPLE_CHUNK_BYTES,
         (uint16_t)s16le[0],
         (uint16_t)s16le[1],
+        (uint16_t)s16le[SAMPLE_CHUNK_SIZE - 2],
         (uint16_t)s16le[SAMPLE_CHUNK_SIZE - 1],
         SAMPLE_CHUNK_SIZE,
         (uint32_t)(millis() - time));
@@ -311,6 +312,14 @@ void task_i2s_write(void *pvParameters)
                 portMAX_DELAY,
                 SAMPLE_CHUNK_BYTES);
             if(item_size == SAMPLE_CHUNK_BYTES && s16le != NULL) {
+                #if DEBUG
+                ESP_LOGI(TAG, "read %d (%04x:%04x:%04x:%04x)",
+                    item_size,
+                    (uint16_t)s16le[0],
+                    (uint16_t)s16le[1],
+                    (uint16_t)s16le[SAMPLE_CHUNK_SIZE - 2],
+                    (uint16_t)s16le[SAMPLE_CHUNK_SIZE - 1]);
+                #endif
                 // write i2s (DMA)
                 write_module_rca_i2s(s16le, SAMPLE_CHUNK_BYTES);
                 // return item to ring buffer (mark finished reading)
