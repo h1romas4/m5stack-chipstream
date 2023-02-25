@@ -3,12 +3,13 @@
  *
  * It makes interface calls from clang to vgmplay and ymfm(C++), which are built in Rust.
  */
+
 #include <freertos/FreeRTOS.h>
 #include <freertos/ringbuf.h>
 #include <freertos/queue.h>
 #include <Arduino.h>
-#include <M5Core2.h>
 #include <esp_task_wdt.h>
+#include <driver/i2s.h>
 
 #include "module_rca_i2s.h"
 #include "chipstream.h"
@@ -23,10 +24,35 @@ static const char *TAG = "main.cpp";
 
 uint32_t play_list_index = 0;
 const char *play_list[3] = {
-    "/M5Stack/VGM/30.vgm",
+    "/M5Stack/VGM/60.vgm",
     "/M5Stack/VGM/31.vgm",
     "/M5Stack/VGM/32.vgm",
 };
+
+/**
+ * System settings
+ */
+#define CS_TASK_STACK_SIZE 65535
+#define IS2_TASK_STACK_SIZE 8192
+#define MESSAGE_QUEUE_SIZE 10
+
+/**
+ * for M5Stack Core2
+ */
+#define M5STACK_CORE2 1
+#if M5STACK_CORE2
+// for M5Stack Core2
+#include <M5Core2.h>
+#else
+// for another board
+#define EXTRA_SPI1_SCLK 14
+#define EXTRA_SPI1_MISO 13
+#define EXTRA_SPI1_MOSI 12
+#define EXTRA_SPI1_CLOCK_HZ 24000000
+#define EXTRA_SD_CS     8
+#include <SD.h>
+SPIClass hspi(FSPI);
+#endif
 
 /**
  * for debug
@@ -50,13 +76,6 @@ File debug_pcm_log;
 #define SAMPLE_CHUNK_MS (SAMPLE_CHUNK_SIZE / SAPMLING_RATE * 1000)
 #define SAMPLE_BUF_BYTES (SAMPLE_CHUNK_BYTES * SAMPLE_CHUNK_HOLD)
 #define SAMPLE_BUF_MS (SAMPLE_CHUNK_MS * SAMPLE_CHUNK_HOLD * 1000)
-
-/**
- * System settings
- */
-#define CS_TASK_STACK_SIZE 65535
-#define IS2_TASK_STACK_SIZE 8192
-#define MESSAGE_QUEUE_SIZE 10
 
 /**
  * Handler
@@ -442,7 +461,7 @@ void destruct(void)
     free(ring_buf);
 
     // uninstall Module RCA I2S
-    i2s_driver_uninstall(I2S_NUM_1);
+    i2s_driver_uninstall(i2s_port_t::I2S_NUM_1);
 
     // heap watch
     heap_caps_print_heap_info(
@@ -457,10 +476,21 @@ void destruct(void)
 void setup(void)
 {
     // M5Stack Core2 initialize
+    #if M5STACK_CORE2
     M5.begin();
+    #else
+    // another board initialize
+    // SPI initialize
+    hspi.begin(EXTRA_SPI1_SCLK, EXTRA_SPI1_MISO, EXTRA_SPI1_MOSI, EXTRA_SD_CS);
+    hspi.setFrequency(EXTRA_SPI1_CLOCK_HZ);
+    // SD begin
+    SD.begin(EXTRA_SD_CS, hspi, EXTRA_SPI1_CLOCK_HZ, "/sdcard", 1, false);
+    #endif
 
     // uninstall M5Stack Core2 initial I2S module
-    i2s_driver_uninstall(I2S_NUM_0);
+    #if M5STACK_CORE2
+    i2s_driver_uninstall(i2s_port_t::I2S_NUM_0);
+    #endif
 
     // initialize Module RCA I2S
     init_module_rca_i2s(
@@ -533,7 +563,10 @@ void setup(void)
  */
 void loop(void)
 {
+    // M5Stack Core2 update
+    #if M5STACK_CORE2
     M5.update();
+    #endif
 
     switch (player_state) {
         case player_state_t::START:
