@@ -30,13 +30,6 @@ const char *play_list[3] = {
 };
 
 /**
- * System settings
- */
-#define CS_TASK_STACK_SIZE 65535
-#define IS2_TASK_STACK_SIZE 8192
-#define MESSAGE_QUEUE_SIZE 10
-
-/**
  * for M5Stack Core2
  */
 #define M5STACK_CORE2 1
@@ -62,6 +55,13 @@ SPIClass hspi(FSPI);
 #if DEBUG_PCM_LOG
 File debug_pcm_log;
 #endif
+
+/**
+ * System settings
+ */
+#define CS_TASK_STACK_SIZE 65535
+#define IS2_TASK_STACK_SIZE 8192
+#define MESSAGE_QUEUE_SIZE 10
 
 /**
  * Audio settings
