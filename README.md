@@ -4,7 +4,7 @@
 
 This is a test to port [C++'s ymfm and Rust's vgmplay](https://github.com/h1romas4/libymfm.wasm) to ESP32(Xtensa).
 
-The repository is a work in progress. Still slow and impractical.
+Still slow and impractical, depending on the sound chip you choose.
 
 - [M5Stack Core2](https://docs.m5stack.com/en/core/core2)
 - [M5Stack RCA Module (I2S)](https://docs.m5stack.com/ja/module/RCA%20Module%2013.2)
