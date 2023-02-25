@@ -3,7 +3,6 @@
  *
  * It makes interface calls from clang to vgmplay and ymfm(C++), which are built in Rust.
  */
-
 #include <freertos/FreeRTOS.h>
 #include <freertos/ringbuf.h>
 #include <freertos/queue.h>
