@@ -8,7 +8,7 @@ Still slow and impractical, depending on the sound chip you choose.
 
 ## Environment
 
-- [M5Stack Core2](https://docs.m5stack.com/en/core/core2)
+- [M5Stack Core2](https://docs.m5stack.com/en/core/core2) (ESP32 PSRAM 4MB+4MB)
 - [M5Stack RCA Module](https://docs.m5stack.com/ja/module/RCA%20Module%2013.2) (I2S PCM5102APWR)
 
 ## Demo
