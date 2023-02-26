@@ -252,6 +252,7 @@ void task_cs(void *pvParameters)
                     cmd.filename
                 );
                 // PCM log for debug
+                // ffplay -f s16le -ar 44100 -ac 2 30.PCM
                 #if DEBUG_PCM_LOG
                 char debug_pcm_log_name[255];
                 strncpy(debug_pcm_log_name, cmd.filename, sizeof(debug_pcm_log_name) - 1);
