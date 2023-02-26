@@ -13,6 +13,8 @@ Still slow and impractical, depending on the sound chip you choose.
 
 ## Demo
 
+![Main Board](https://raw.githubusercontent.com/h1romas4/m5stack-chipstream/main/docs/images/chipstream-01.jpg)
+
 🎥 https://twitter.com/h1romas4/status/1629345305861947393
 
 ## TODO
