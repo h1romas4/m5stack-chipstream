@@ -21,7 +21,7 @@ jobs:
           ~/esp
           ~/.espressif
           ~/.rustup
-        key: ${{ runner.os }}-espidf-and-compiler-v443-espup-rust
+        key: ${{ runner.os }}-espidf-and-compiler-v444-espup-rust
 
     - name: Dependencies Setup
       run: |
