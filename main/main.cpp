@@ -23,7 +23,7 @@ static const char *TAG = "main.cpp";
 
 uint32_t play_list_index = 0;
 const char *play_list[3] = {
-    "/M5Stack/VGM/60.vgm",
+    "/M5Stack/VGM/30.vgm",
     "/M5Stack/VGM/31.vgm",
     "/M5Stack/VGM/32.vgm",
 };
