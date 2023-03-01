@@ -30,7 +30,7 @@ Still slow and impractical, depending on the sound chip you choose.
 
 ### Setup
 
-- [Setup ESF-IDF v4.4.3](https://docs.espressif.com/projects/esp-idf/en/v4.4.3/esp32/get-started/index.html#installation-step-by-step)
+- [Setup ESF-IDF v4.4.4](https://docs.espressif.com/projects/esp-idf/en/v4.4.4/esp32/get-started/index.html#installation-step-by-step)
 
 get_idf
 
