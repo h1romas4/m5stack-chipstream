@@ -122,9 +122,9 @@ Thanks for all the open source.
 |-|-|--|
 |[esp-idf](https://docs.espressif.com/projects/esp-idf/en/release-v4.4/esp32/get-started/index.html)|`v4.4.5`|BSD License|
 |[arduino-esp32](https://github.com/espressif/arduino-esp32)|`2.0.11`|LGPL-2.1 License|
-|[M5Core2](https://github.com/m5stack/M5Core2)|`0.1.5`|MIT License|
-|[M5EPD](https://github.com/m5stack/M5EPD)|`0.1.4`|The FreeType License(FreeType Part)|
-|[M5GFX](https://github.com/m5stack/M5GFX)|`0.1.4`|MIT license|
+|[M5Core2](https://github.com/m5stack/M5Core2)|`0.1.6`|MIT License|
+|[M5EPD](https://github.com/m5stack/M5EPD)|`0.1.5`|The FreeType License(FreeType Part)|
+|[M5GFX](https://github.com/m5stack/M5GFX)|`0.1.9`|MIT license|
 |[ymfm](https://github.com/aaronsgiles/ymfm)|`d641a806`|BSD-3-Clause license|
 |[libymfm.wasm](https://github.com/h1romas4/libymfm.wasm)|`v0.16.0`|BSD-3-Clause license (include MAME's soundchip ports)|
 
