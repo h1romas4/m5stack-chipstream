@@ -21,7 +21,7 @@ jobs:
           ~/esp
           ~/.espressif
           ~/.rustup
-        key: ${{ runner.os }}-espidf-and-compiler-v444-rust
+        key: ${{ runner.os }}-espidf-and-compiler-v445-rust
 
     - name: Dependencies Setup
       run: |
@@ -47,7 +47,7 @@ jobs:
       run: |
         mkdir -p ~/esp
         cd ~/esp
-        git clone -b v4.4.4 --recursive https://github.com/espressif/esp-idf.git
+        git clone -b v4.4.5 --recursive https://github.com/espressif/esp-idf.git
         cd ~/esp/esp-idf
         ./install.sh esp32
 
