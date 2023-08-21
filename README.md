@@ -30,7 +30,7 @@ Still slow and impractical, depending on the sound chip you choose.
 
 ### Setup
 
-- [Setup ESF-IDF v4.4.4](https://docs.espressif.com/projects/esp-idf/en/v4.4.4/esp32/get-started/index.html#installation-step-by-step)
+- [Setup ESF-IDF v4.4.5](https://docs.espressif.com/projects/esp-idf/en/v4.4.5/esp32/get-started/index.html#installation-step-by-step)
 
 get_idf
 
@@ -73,8 +73,7 @@ chmod a+x espup
 
 ```
 cat ~/export-esp.sh
-export LIBCLANG_PATH="/home/hiromasa/.espressif/tools/xtensa-esp32-elf-clang/esp-15.0.0-20221201-x86_64-unknown-linux-gnu/esp-clang/lib"
-export CLANG_PATH="/home/hiromasa/.espressif/tools/xtensa-esp32-elf-clang/esp-15.0.0-20221201-x86_64-unknown-linux-gnu/esp-clang/bin/clang"
+export LIBCLANG_PATH="/home/hiromasa/.rustup/toolchains/esp/xtensa-esp32-elf-clang/esp-16.0.0-20230516/esp-clang/lib"
 ```
 
 ```
@@ -88,15 +87,15 @@ drwxr-xr-x 3 hiromasa hiromasa 4096  2月 14 20:56 lib/
 drwxr-xr-x 2 hiromasa hiromasa 4096  2月 14 20:56 libexec/
 drwxr-xr-x 5 hiromasa hiromasa 4096  2月 14 20:56 share/
 $ ~/.rustup/toolchains/esp/bin/rustc -V
-rustc 1.67.0-nightly (725e31c21 2023-01-25)
+rustc 1.71.0-nightly (4ca000ac8 2023-07-13) (1.71.0.1)
 ```
 
 ```
 $ ls -laF ~/.espressif/tools/xtensa-esp32-elf-clang/
 合計 12
-drwxrwxr-x  3 hiromasa hiromasa 4096  2月 14 20:58 ./
-drwxrwxr-x 13 hiromasa hiromasa 4096  2月 14 20:58 ../
-drwxrwxr-x  3 hiromasa hiromasa 4096  2月 14 20:58 esp-15.0.0-20221201-x86_64-unknown-linux-gnu/
+drwxrwxr-x  3 hiromasa hiromasa 4096  2月 14  2023 ./
+drwxrwxr-x 15 hiromasa hiromasa 4096  2月 28 22:14 ../
+drwxrwxr-x  3 hiromasa hiromasa 4096  2月 14  2023 esp-15.0.0-20221201-x86_64-unknown-linux-gnu/
 ```
 
 ### Compile and Flash
@@ -121,8 +120,8 @@ Thanks for all the open source.
 
 |Name|Version|License|
 |-|-|--|
-|[esp-idf](https://docs.espressif.com/projects/esp-idf/en/release-v4.4/esp32/get-started/index.html)|`v4.4.4`|BSD License|
-|[arduino-esp32](https://github.com/espressif/arduino-esp32)|`2.0.9`|LGPL-2.1 License|
+|[esp-idf](https://docs.espressif.com/projects/esp-idf/en/release-v4.4/esp32/get-started/index.html)|`v4.4.5`|BSD License|
+|[arduino-esp32](https://github.com/espressif/arduino-esp32)|`2.0.11`|LGPL-2.1 License|
 |[M5Core2](https://github.com/m5stack/M5Core2)|`0.1.5`|MIT License|
 |[M5EPD](https://github.com/m5stack/M5EPD)|`0.1.4`|The FreeType License(FreeType Part)|
 |[M5GFX](https://github.com/m5stack/M5GFX)|`0.1.4`|MIT license|
