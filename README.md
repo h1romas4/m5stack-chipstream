@@ -26,7 +26,7 @@ Still slow and impractical, depending on the sound chip you choose.
 
 ## Build
 
-@see [.github/workflows/build.yml](https://github.com/h1romas4/m5stack-chipstream/blob/main/.github/workflows/build.yml)
+@see [.github/workflows/build.yml](https://github.com/h1romas4/m5stack-chipstream/blob/main/.github/workflows/build.yml#L26-L59)
 
 ### Setup
 
