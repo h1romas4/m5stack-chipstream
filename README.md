@@ -68,7 +68,7 @@ https://github.com/esp-rs/espup
 ```
 curl -L https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-unknown-linux-gnu -o espup
 chmod a+x espup
-./espup install
+./espup install --toolchain-version 1.71.0.1
 ```
 
 ```
