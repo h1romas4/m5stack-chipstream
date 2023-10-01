@@ -61,7 +61,7 @@ Thread model: posix
 gcc version 8.4.0 (crosstool-NG esp-2021r2-patch5)
 ```
 
-- Setup Rust Xtensa toolchaine
+- Setup Rust Xtensa toolchain
 
 https://github.com/esp-rs/espup
 
